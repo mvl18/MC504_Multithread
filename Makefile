@@ -4,7 +4,7 @@ PROJECT_NAME = santa
 
 CC = gcc
 
-BUILD_FLAGS = -O2 -lncurses -Wall
+BUILD_FLAGS = -O2 -lncurses -pthread -Wall
 
 BUILD_DIR = build
 SRC_DIR = src
