@@ -4,8 +4,9 @@ PROJECT_NAME = santa
 
 CC = gcc
 
-BUILD_FLAGS = -O2 -lncurses -pthread -Wall
+BUILD_FLAGS = -O2 -Wall
 
+INCLUDES = -Ilib -lncurses -pthread
 BUILD_DIR = build
 SRC_DIR = src
 
@@ -16,7 +17,7 @@ C_SOURCES = main.c
 all: buildFolder $(PROJECT_NAME)
 
 $(PROJECT_NAME): $(SRC_DIR)/main.c
-	$(CC) $< -o $(BUILD_DIR)/$@ $(BUILD_FLAGS)
+	$(CC) $< -o $(BUILD_DIR)/$@ $(BUILD_FLAGS) $(INCLUDES)
 
 
 # Criar diretório de build se necessário
