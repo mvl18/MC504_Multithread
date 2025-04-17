@@ -1,4 +1,4 @@
-// TODO: adicionar mutex
+// TODO: verificar se essa forma possui justiça
 
 #include "fila.h"
 
