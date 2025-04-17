@@ -47,3 +47,6 @@ x.txt
 # Kernel Module Compile Results
 *.mod*
 *.cmd
+
+# Não sincronizar .clangd
+.clangd
