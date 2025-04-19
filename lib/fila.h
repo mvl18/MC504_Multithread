@@ -19,7 +19,8 @@ typedef struct {
   pthread_mutex_t lock;
 } fila_t;
 
-fila_t fila_init(int tamanho_total);
+fila_t *fila_init(int tamanho_total);
+void fila_destroy(fila_t *fila);
 
 // Adiciona um elemento no fim da lista (se o elemento anterior não tiver sido
 // retirado, ele será sobrescrito
@@ -30,8 +31,11 @@ size_t fila_pop(fila_t *fila);
 
 // Retorna o elemeto na determinada posição da fila sem modificar a fila
 // (isto é buffer[(inicio+posicao)%tamanho]
-// WARNING:
-// é possível que o valor seja alterado logo após esta função retornar
+// WARNING: é possível que o valor seja alterado logo após esta função retornar
 size_t fila_peek(fila_t *fila, size_t posicao);
+
+// Retorna o tamanho da fila
+// WARNING: é possível que o valor seja alterado logo após esta função retornar
+size_t fila_get_tamanho(fila_t *fila);
 
 #endif // !FILA_H

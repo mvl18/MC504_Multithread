@@ -9,14 +9,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-fila_t fila_elfos;
+fila_t *fila_elfos;
 
-// TODO: Fazer o papai Noel incrementar o semáforo dos elfos 3 vezes para atendê-los
-sem_t semaforo_elfos; // Este semáfor se torna 3 quando o papai noel está
-                      // acordado para atender 3 elfos. E se torna zero quando o
-                      // papai noel não está disponível para atender os elfos
+sem_t semaforo_elfos; // Este semáforo indica quantos faltam para haver
+                      // exatamente três elfos precisando de ajuda
 
-size_t elfos_atendidos[3]; // Lista dos elfos sendo atendidos
+// TODO: Implementar no Santa
+sem_t semaforo_ajuda_finalizada; // O Santa torna o valor deste semáforo em três
+                                 // para avisar os três elfos que terminou de
+                                 // ajudá-los
+
+pthread_t threads_elfos[QUANT_ELFOS]; // Contém os IDs de todas as threads de elfos
+
+// Esta função inicializa todas as threads de elfos e todos os semáforos
+// relacionados aos elfos
+void elfos_init();
+
+// Esta função dá join em todas as threads de elfos
+void elfos_close();
 
 void *elfo(void *args);
 

@@ -2,16 +2,20 @@
 
 #include "fila.h"
 
-fila_t fila_init(int tamanho_total) {
-  fila_t ret = {
-      .buffer = malloc(tamanho_total * sizeof(int)),
-      .inicio = 0,
-      .fim = 1,
-      .tamanho_total = tamanho_total,
-      .tamanho = 0,
-      .lock = PTHREAD_MUTEX_INITIALIZER,
-  };
+fila_t *fila_init(int tamanho_total) {
+  fila_t *ret = malloc(sizeof(fila_t));
+  ret->buffer = malloc(tamanho_total * sizeof(int));
+  ret->inicio = 0;
+  ret->fim = 0;
+  ret->tamanho_total = tamanho_total;
+  ret->tamanho = 0;
+  pthread_mutex_init(&ret->lock, NULL);
   return ret;
+}
+
+void fila_destroy(fila_t *fila) {
+  free(fila->buffer);
+  free(fila);
 }
 
 void fila_append(fila_t *fila, size_t val) {
@@ -46,3 +50,5 @@ size_t fila_peek(fila_t *fila, size_t posicao) {
   }
   return fila->buffer[(fila->inicio + posicao) % fila->tamanho_total];
 }
+
+size_t fila_get_tamanho(fila_t *fila) { return fila->tamanho; }
