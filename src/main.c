@@ -1,13 +1,10 @@
-#include <pthread.h>
-#include <globals.h>
 #include "elfo.h"
-
+#include <globals.h>
+#include <pthread.h>
 
 void prepareSleigh();
 void getHitched();
 void helpElves();
-
-
 
 int main() {
   // Inicializando a fila de elfos
@@ -20,7 +17,7 @@ int main() {
   }
 
   // Unir threads dos Elfos
-  for (size_t i = 0; i<QUANT_ELFOS; i++) {
+  for (size_t i = 0; i < QUANT_ELFOS; i++) {
     pthread_join(threads_elfos[i], NULL);
   }
 }
