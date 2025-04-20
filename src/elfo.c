@@ -19,12 +19,9 @@ void elfos_close() {
   for (size_t i = 0; i < QUANT_ELFOS; i++) {
     pthread_join(threads_elfos[i], NULL);
   }
+  pthread_mutex_destroy(&elfos_lock);
 }
 
-// O Elfo pode estar em 3 condições
-//  1. Trabalhando
-//  2. Esperando para ser ajudado
-//  3. Sendo ajudado
 void *elfo(void *args) {
   size_t id = (size_t)args;
   while (true) {
@@ -37,12 +34,26 @@ void *elfo(void *args) {
       // Este elfo que acabou de ficar com problema, deve esperar até que o
       // Santa não esteja ajudando ninguém para pedir ajuda
       sem_wait(&semaforo_elfos);
-
       printf("O elfo %d está com problema", (int)id);
 
-      // TODO: Fazer o seguinte somente quando houverem exatamente 3 elfos
-      // esperando para serem ajudados
-      // talvez usar barreira seja uma boa ideia
+      pthread_mutex_lock(&elfos_lock);
+
+      elfos_precisando_de_ajuda++;
+
+      // Se houverem exatamente três elfos precisando de ajuda, permitimos os
+      // elfos irem acordar o Santa
+      if (elfos_precisando_de_ajuda == 3) {
+        sem_post(&semaforo_acordar_santa);
+        sem_post(&semaforo_acordar_santa);
+        sem_post(&semaforo_acordar_santa);
+      } else if (elfos_precisando_de_ajuda > 3) {
+        fprintf(stderr,
+                "Há mais de 3 elfos precisando de ajuda ao mesmo tempo\n");
+      }
+
+      pthread_mutex_unlock(&elfos_lock);
+
+      sem_wait(&semaforo_acordar_santa);
       getHelp(id);
     }
   }
@@ -52,5 +63,6 @@ void *elfo(void *args) {
 void getHelp(size_t id) {
   printf("o elfo %d está recebendo ajuda", (int)id);
   sem_wait(&semaforo_ajuda_finalizada);
+  sem_post(&semaforo_elfos);
   printf("O elfo %d acabou de ser ajudado e voltará a trabalhar", (int)id);
 }
