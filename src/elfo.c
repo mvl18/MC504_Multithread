@@ -1,5 +1,4 @@
 // Arquivo que contém todas as funções relacionadas aos elfos
-
 #include "elfo.h"
 
 void elfos_init() {
@@ -43,6 +42,7 @@ void *elfo(void *args) {
       // Se houverem exatamente três elfos precisando de ajuda, permitimos os
       // elfos irem acordar o Santa
       if (elfos_precisando_de_ajuda == 3) {
+        sem_post(&semaforo_acordar_santa);
         sem_post(&semaforo_acordar_santa);
         sem_post(&semaforo_acordar_santa);
         sem_post(&semaforo_acordar_santa);
