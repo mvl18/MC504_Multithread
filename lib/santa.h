@@ -1,10 +1,24 @@
-#ifndef SANTA_H
-#define SANTA_H
+#ifndef __SANTA_H__
+#define __SANTA_H__
 
-#include "elfo.h"
+#include "globals.h"
+#include <limits.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-void santa();
+extern pthread_t santa_thread;
+
+extern sem_t semaforo_acordar_santa; // Quando semáforo for exatamente quatro, ele
+                              // acordará o Santa e os três elfos serão ajudados
+
+void santa_init();
 
 void helpElves();
 
-#endif // !SANTA_H
+void prepareSleigh();
+
+#endif // !__SANTA_H__
