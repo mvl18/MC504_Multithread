@@ -15,7 +15,7 @@ void getHitched(int id) {
     print_yellow("Rena %d: Engatada ao trenó!\n", id);
 }
 
-void *reeindeer(void *args) {
+void *reindeer(void *args) {
     size_t id = (size_t)args;
     while (1) {
         sleep(rand() % 10 + 5); // Férias
@@ -37,7 +37,7 @@ void reindeer_init() {
     sem_init(&reindeerSem, 0, 0);
 
     for (size_t i = 0; i < NUM_OF_REINDEERS; i++) {
-        pthread_create(&reindeer_threads[i], NULL, reeindeer, (void *)(i + 1));
+        pthread_create(&reindeer_threads[i], NULL, reindeer, (void *)(i + 1));
     }
 }
 
