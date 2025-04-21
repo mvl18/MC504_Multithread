@@ -17,7 +17,7 @@ void *santa(void *args) {
     print_red("Santa acordou\n");
     
     pthread_mutex_lock(&elfos_lock);
-    pthread_mutex_lock(&reinderMutex);
+    pthread_mutex_lock(&reindeerMutex);
     if (reindeer_count == NUM_OF_REINDEERS) {
       prepareSleigh();
     }
@@ -25,7 +25,7 @@ void *santa(void *args) {
       helpElves();
     }
 
-    pthread_mutex_unlock(&reinderMutex);
+    pthread_mutex_unlock(&reindeerMutex);
     pthread_mutex_unlock(&elfos_lock);
   
   }

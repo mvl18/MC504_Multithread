@@ -2,7 +2,7 @@
 #include "santa.h"
 #include "log.h"
 
-pthread_mutex_t reinderMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t reindeerMutex = PTHREAD_MUTEX_INITIALIZER;
 
 sem_t reindeerSem;
 
@@ -19,12 +19,12 @@ void *reindeer(void *args) {
     size_t id = (size_t)args;
     while (1) {
         sleep(rand() % 10 + 5); // Férias
-        pthread_mutex_lock(&reinderMutex);
+        pthread_mutex_lock(&reindeerMutex);
         reindeer_count++;
         print_yellow("Rena %li voltou. Total: %d\n", id, reindeer_count);
         if (reindeer_count == NUM_OF_REINDEERS)
             sem_post(&semaforo_acordar_santa);
-        pthread_mutex_unlock(&reinderMutex);
+        pthread_mutex_unlock(&reindeerMutex);
 
         sem_wait(&reindeerSem);
         getHitched(id);        
@@ -45,5 +45,5 @@ void reindeer_close() {
     for (int i = 0; i < NUM_OF_REINDEERS; i++) {
         pthread_join(reindeer_threads[i], NULL);
     }
-    pthread_mutex_destroy(&reinderMutex);
+    pthread_mutex_destroy(&reindeerMutex);
 }

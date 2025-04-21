@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-extern pthread_mutex_t reinderMutex;
+extern pthread_mutex_t reindeerMutex;
 
 extern sem_t reindeerSem;
 
