@@ -10,6 +10,8 @@ sem_t semaforo_elfos_podem_ser_ajudados;
 sem_t semaforo_ajuda_finalizada;
 pthread_t threads_elfos[QUANT_ELFOS];
 int elfos_precisando_de_ajuda = 0;
+fila_t *fila_elfos;
+size_t elfos_sendo_ajudados[3] = {0};
 
 void elfos_init() {
   // TODO: Arrumar isso antes do merge
@@ -29,6 +31,8 @@ void elfos_init() {
   // foi finalizada
   sem_init(&semaforo_ajuda_finalizada, 0, 0);
 
+  fila_elfos = fila_init(QUANT_ELFOS);
+
   // Criar Threads de Elfos
   for (size_t i = 0; i < QUANT_ELFOS; i++) {
     pthread_create(&threads_elfos[i], NULL, elfo, (void *)i + 1);
@@ -40,6 +44,7 @@ void elfos_close() {
   for (size_t i = 0; i < QUANT_ELFOS; i++) {
     pthread_join(threads_elfos[i], NULL);
   }
+  fila_destroy(fila_elfos);
   pthread_mutex_destroy(&elfos_lock);
 }
 
@@ -59,11 +64,29 @@ void *elfo(void *args) {
 
     // sortear se o elfo está com problema
     if (random() % CHANCE_PROBLEMA == 1) {
-
-      // Este elfo que acabou de ficar com problema, deve esperar até que o
-      // Santa não esteja ajudando ninguém para pedir ajuda
-      sem_wait(&semaforo_elfos);
       print_green("O elfo %d está com problema\n", (int)id);
+
+      // Se já houver um grupo de três elfos esperando pelo Santa, este elfo
+      // deve entrar na fila
+      if (sem_trywait(&semaforo_elfos) != 0) {
+        print_green("O elfo %d vai pra fila\n", (int)id);
+        fila_append(fila_elfos, id);
+        // Agora ele deve esperar que seja um dos três primeiros da fila
+        while (true) {
+          sem_wait(&semaforo_elfos);
+          if (fila_peek(fila_elfos, 0) == id ||
+              fila_peek(fila_elfos, 1) == id ||
+              fila_peek(fila_elfos, 2) == id) {
+            break;
+          }
+
+          // Tirar um elemento da fila. Essa função será executada 3 vezes,
+          // tirando os três primeiros elfos da fila
+          fila_pop(fila_elfos);
+        }
+      }
+      print_green("O elfo %d está no grupo que será atendido\n", (int)id);
+
 
       pthread_mutex_lock(&elfos_lock);
 

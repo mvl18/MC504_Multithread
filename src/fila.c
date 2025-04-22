@@ -1,15 +1,17 @@
 // TODO: verificar se essa forma possui justiça
 
 #include "fila.h"
+#include <log.h>
 
 fila_t *fila_init(int tamanho_total) {
   fila_t *ret = malloc(sizeof(fila_t));
-  ret->buffer = malloc(tamanho_total * sizeof(int));
+  ret->buffer = calloc(tamanho_total, sizeof(size_t));
   ret->inicio = 0;
   ret->fim = 0;
   ret->tamanho_total = tamanho_total;
   ret->tamanho = 0;
-  pthread_mutex_init(&ret->lock, NULL);
+  pthread_mutex_init(&(ret->lock), NULL);
+
   return ret;
 }
 
@@ -22,7 +24,7 @@ void fila_append(fila_t *fila, size_t val) {
 
   pthread_mutex_lock(&fila->lock);
 
-  fila->buffer[fila->fim] = val;
+  fila->buffer[0] = val;
   fila->fim = (fila->fim + 1) % fila->tamanho_total;
   fila->tamanho++;
 
