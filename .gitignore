@@ -50,3 +50,6 @@ x.txt
 
 # Não sincronizar .clangd
 .clangd
+.vscode/settings.json
+santa_full
+teste.c

@@ -1,12 +1,19 @@
-#include <globals.h>
-#include <pthread.h>
 #include "elfo.h"
-
-void prepareSleigh();
-void getHitched();
-void helpElves();
+#include "log.h"
+#include "reindeer.h"
+#include "santa.h"
+#include <pthread.h>
 
 int main() {
-  elfos_init();
+  print_blue("Iniciando o programa...\n");
 
+  prepare_santa();
+  elfos_init();
+  reindeer_init();
+  santa_init();
+  elfos_close();
+  reindeer_close();
+
+  print_blue("O Programa finalizou!\n");
+  return 0;
 }
