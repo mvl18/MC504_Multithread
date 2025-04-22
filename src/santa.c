@@ -67,3 +67,7 @@ void prepareSleigh() {
     sem_post(&reindeerSem);
   reindeer_count = 0;
 }
+
+void prepare_santa() {
+  sem_init(&semaforo_acordar_santa, 0, 0);
+}
