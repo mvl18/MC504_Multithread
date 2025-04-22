@@ -1,6 +1,7 @@
 #ifndef __ELFO_H__
 #define __ELFO_H__
 
+#include "fila.h"
 #include "globals.h"
 #include <limits.h>
 #include <pthread.h>
@@ -34,6 +35,9 @@ extern pthread_t threads_elfos[QUANT_ELFOS]; // Contém os IDs de todas as
                                              // threads de elfos
 
 extern int elfos_precisando_de_ajuda; // Indica quantos elfos precisam de ajuda
+
+extern fila_t *fila_elfos;
+extern size_t elfos_sendo_ajudados[3];
 
 // Esta função inicializa todas as threads de elfos e todos os semáforos
 // relacionados aos elfos
