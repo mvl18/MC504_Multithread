@@ -21,4 +21,6 @@ void helpElves();
 
 void prepareSleigh();
 
+void prepare_santa();
+
 #endif // !__SANTA_H__

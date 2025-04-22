@@ -14,11 +14,6 @@ fila_t *fila_elfos;
 size_t elfos_sendo_ajudados[3] = {0};
 
 void elfos_init() {
-  // TODO: Arrumar isso antes do merge
-  // Isso não era pra tá aqui, mas esse semaforo precisa existir antes das
-  // threads/
-  sem_init(&semaforo_acordar_santa, 0, 0);
-
   // O semáforo é inicializado com três pois três elfos devem ser atendidos ao
   // mesmo tempo
   sem_init(&semaforo_elfos, 0, 3);
