@@ -1,30 +1,25 @@
-// Arquivo que contém todas as funções relacionadas aos elfos
+// Todos os comentários sobre as variáveis e as funções estão em elfo.h
 #include "elfo.h"
-#include "santa.h"
 #include "log.h"
+#include "santa.h"
 
-// Lock para todos as variáveis relacionadas aos elfos que necessitarem
 pthread_mutex_t elfos_lock = PTHREAD_MUTEX_INITIALIZER;
 
-sem_t semaforo_elfos; // Este semáforo indica quantos faltam para haver
-                      // exatamente três elfos precisando de ajuda
+sem_t semaforo_elfos;
 
-// TODO: Implementar no Santa
-sem_t semaforo_ajuda_finalizada; // O Santa torna o valor deste semáforo em três
-                                 // para avisar os três elfos que terminou de
-                                 // ajudá-los
+sem_t semaforo_ajuda_finalizada;
 
-pthread_t threads_elfos[QUANT_ELFOS]; // Contém os IDs de todas as
-                                      // threads de elfos
+pthread_t threads_elfos[QUANT_ELFOS];
 
-// Indica quantos elfos precisam de ajuda
 int elfos_precisando_de_ajuda = 0;
 
 void elfos_init() {
-  sem_init(&semaforo_acordar_santa, 0, 0); // Isso não era pra tá aqui , mas esse semaforo precisa existir antes das threads
+  sem_init(&semaforo_acordar_santa, 0,
+           0); // Isso não era pra tá aqui , mas esse semaforo precisa existir
+               // antes das threads
   sem_init(&semaforo_elfos, 0, 3); // O semáforo é inicializado com três
-                                      // pois três elfos devem ser atendidos
-                                      // ao mesmo tempo
+                                   // pois três elfos devem ser atendidos
+                                   // ao mesmo tempo
   sem_init(&semaforo_ajuda_finalizada, 0, 0);
 
   // Criar Threads de Elfos
@@ -80,5 +75,6 @@ void getHelp(int id) {
   print_green("o elfo %d está recebendo ajuda\n", (int)id);
   sem_wait(&semaforo_ajuda_finalizada);
   sem_post(&semaforo_elfos);
-  print_green("O elfo %d acabou de ser ajudado e voltará a trabalhar\n", (int)id);
+  print_green("O elfo %d acabou de ser ajudado e voltará a trabalhar\n",
+              (int)id);
 }
