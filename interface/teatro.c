@@ -5,11 +5,11 @@
 #include <time.h>
 // Para compilar use -lSDL2 -lSDL2_image
 
-#define MAX_RENAS 100
+#define MAX_RENAS 10
 #define MAX_ELFOS 10
 
 typedef struct {
-    int status; // 0 = normal, 1 = ajudando
+    int status; // 0 = trabalhando, 1 = na fila, 2 = ajudado, 3 = finalizado
 } Elfo;
 
 typedef struct {
@@ -24,6 +24,73 @@ SDL_Texture* carregar_textura(const char* path, SDL_Renderer* renderer) {
     return tex;
 }
 
+int rrandom(int min, int max){
+   return min + rand() / (RAND_MAX / (max - min + 1) + 1);
+}
+
+// Inicializa os elfos
+Elfo elfos[MAX_ELFOS] = {0};
+int elfos_ajudando[3] = {-1, -1, -1}; // Armazena os índices dos 3 elfos ajudando
+int elfo_ajuda = 0;
+int santa_status;
+int renas_status[MAX_RENAS] = {0};
+int renas_papai = 0;
+
+void acorda_rena(int id_rena){
+    renas_status[id_rena] = 1;
+}
+ 
+void elfo_atualiza(int id_elfo, int novo_status){
+    elfos[id_elfo].status = novo_status;
+}
+void ajuda_elfo(int id_elfo){
+    elfos[id_elfo].status = 1;
+}
+void santa_libera_elfos(){
+    for (int j = 0; j < 3; j++)
+    {
+        elfos[elfos_ajudando[j]].status = 0;
+        elfos_ajudando[j] = -1;
+    }
+    elfo_ajuda = 0;
+}
+void santa_chama_elfos(){
+    elfo_ajuda = 1;
+}
+void santa_novo_status(){
+
+}
+
+
+void santa_verifica(){
+    int ajudando_count = 0;
+        
+    // Verifica quais elfos estão ajudando e armazena os primeiros 3
+    if(!elfo_ajuda){
+        for (int i = 0; i < MAX_ELFOS; i++) {
+            if (elfos[i].status == 1 || elfos[i].status == 2) {
+                if (ajudando_count < 3) {
+                    elfos[i].status = 2;
+                    elfos_ajudando[ajudando_count] = i; // Salva o índice do elfo ajudando
+                }
+                ajudando_count++;
+            }
+        }
+    }
+    int renas_todas = 1;
+    for (int i = 0; i < MAX_RENAS; i++)
+    {
+        renas_todas &= renas_status[i];
+    }
+    if (!elfo_ajuda && renas_todas && !renas_papai){
+        renas_papai = 1;
+    }
+    printf("%d\n", ajudando_count);
+    if (ajudando_count == 3 && !renas_papai)
+    {
+        santa_chama_elfos(elfos_ajudando);
+    }
+}
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
@@ -49,47 +116,64 @@ int main() {
         return -1;
     }
 
-    // Inicializa os elfos
-    Elfo elfos[MAX_ELFOS] = {0};
-    int renas = 0;
-    Posicao pos_renas[MAX_RENAS];
-
     Uint32 ultimoTempoRena = SDL_GetTicks();
     Uint32 ultimoTempoElfo = SDL_GetTicks();
     int quit = 0;
     SDL_Event e;
+    int aux = 0;
 
     while (!quit) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 quit = 1;
             }
+            if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE){
+                quit = 1;
+            }
         }
 
         Uint32 agora = SDL_GetTicks();
 
+        int renas_todas = 1;
+        for (int i = 0; i < MAX_RENAS; i++)
+        {
+            renas_todas &= renas_status[i];
+        }
         // Adiciona uma rena a cada 1 segundo
-        if (agora - ultimoTempoRena >= 1000 && renas < 9) {
-            pos_renas[renas].x = WINDOW_WIDTH - 100;
-            pos_renas[renas].y = 50 + (renas * 60);
-            renas++;
+        if (agora - ultimoTempoRena >= 1000 && !renas_todas) {
+            int k = rrandom(0, MAX_RENAS-1);
+            while(renas_status[k]){
+                k = rrandom(0, MAX_RENAS-1);
+            }
+            if(k >= 10){
+            }
+            acorda_rena(k);
             ultimoTempoRena = agora;
         }
 
+        
         // Altera o status dos elfos a cada 1 segundo
-        if (agora - ultimoTempoElfo >= 1000) {
-            int i = rand() % 5;
-            if (elfos[i].status == 0) {
-                elfos[i].status = 1;
+
+        
+        if (agora - ultimoTempoElfo >= 1000)
+        {
+
+            int i = rand() % MAX_ELFOS;
+            int k = 0;
+            while (elfos[i].status && k++ != MAX_ELFOS)
+            {
+                i = rand() % MAX_ELFOS;
             }
+            ajuda_elfo(i);
+
+            aux+= 1;
+            if (elfo_ajuda && aux % 3 == 0)
+                santa_libera_elfos();
             ultimoTempoElfo = agora;
         }
 
         // Contar elfos ajudando
-        int ajudando = 0;
-        for (int i = 0; i < MAX_ELFOS; i++) {
-            if (elfos[i].status == 1) ajudando++;
-        }
+        santa_verifica();
 
         // Renderização
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
@@ -101,61 +185,52 @@ int main() {
 
         // Papai Noel
         SDL_Rect dst_papai = {WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 150, 300, 300};
-        SDL_RenderCopy(renderer, (ajudando >= 3 ? tex_papai_acorda : tex_papai_dorme), NULL, &dst_papai);
+        SDL_RenderCopy(renderer, (santa_status == 1 ? tex_papai_acorda : tex_papai_dorme), NULL, &dst_papai);
 
         // Elfos
-        int ajudando_count = 0;
-        int elfos_ajudando[3] = {-1, -1, -1}; // Armazena os índices dos 3 elfos ajudando
-            
-        // Verifica quais elfos estão ajudando e armazena os primeiros 3
-        for (int i = 0; i < MAX_ELFOS; i++) {
-            if (elfos[i].status == 1) {
-                if (ajudando_count < 3) {
-                    elfos_ajudando[ajudando_count] = i; // Salva o índice do elfo ajudando
-                }
-                ajudando_count++;
-            }
-        }
-        
+
+
         // Renderização dos elfos
         for (int i = 0; i < MAX_ELFOS; i++) {
             SDL_Rect dst_elfo;
         
             // Apenas desloca os 3 primeiros elfos ajudando quando ajudando_count == 3
-            if (ajudando_count == 3 && 
+            if (elfo_ajuda && 
                 (i == elfos_ajudando[0] || i == elfos_ajudando[1] || i == elfos_ajudando[2])) {
-                dst_elfo.x = WINDOW_WIDTH / 2 - 150; // Perto do centro da tela
+                dst_elfo.x = WINDOW_WIDTH / 2 - 150;                                                    // Perto do centro da tela
                 dst_elfo.y = 200 + (i == elfos_ajudando[0] ? 0 : (i == elfos_ajudando[1] ? 100 : 200)); // Espaçamento vertical
             } else {
                 // Elfos restantes permanecem em suas posições originais
                 dst_elfo.x = 50;
                 dst_elfo.y = 200 + i * 100;
             }
-        
             dst_elfo.w = 100;
             dst_elfo.h = 100;
         
             // Renderiza a textura correspondente ao status do elfo
             SDL_RenderCopy(renderer, (elfos[i].status ? tex_elfoajuda : tex_elfo), NULL, &dst_elfo);
         }
-
+        
         // Renas
-        for (int i = 0; i < renas; i++) {
+        for (int i = 0; i < MAX_RENAS; i++) {
             SDL_Rect dst_rena;
-            if (renas >= 9) {
-                dst_rena.x = 450 + (i % 3) * 120;
-                dst_rena.y = 450 + (i / 3) * 120;
-            } else {
-                dst_rena.x = WINDOW_WIDTH - 100;
-                dst_rena.y = 50 + i * 100;
+            if (renas_status[i])
+            {
+                if (renas_papai) {
+                    dst_rena.x = 450 + (i % 3) * 120;
+                    dst_rena.y = 450 + (i / 3) * 120;
+                } else {
+                    dst_rena.x = WINDOW_WIDTH - 100;
+                    dst_rena.y = 50 + i * 100;
+                }
+                dst_rena.w = 100;
+                dst_rena.h = 100;
+                SDL_RenderCopy(renderer, tex_rena, NULL, &dst_rena);
             }
-            dst_rena.w = 100;
-            dst_rena.h = 100;
-            SDL_RenderCopy(renderer, tex_rena, NULL, &dst_rena);
         }
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(16);
+        SDL_Delay(100);
     }
 
     // Cleanup
