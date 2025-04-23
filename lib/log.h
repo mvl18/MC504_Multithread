@@ -3,7 +3,6 @@
 
 #include <pthread.h>
 // Mutex global para proteger prints
-static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 /**
  * @brief Print message in red color
  * 

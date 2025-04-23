@@ -52,7 +52,7 @@ void fila_remove(fila_t *fila, int id){
     index =  (index + 1) % fila->tamanho_total;
   }
   for (int i = fila->inicio; i < index; i++){
-    fila->buffer[i + 1] = fila->buffer[i];
+    fila->buffer[(i + 1)% fila->tamanho_total] = fila->buffer[i];
   }
   fila->tamanho--;
   fila->inicio = (fila->inicio + 1) % fila->tamanho_total;

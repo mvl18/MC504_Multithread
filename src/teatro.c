@@ -109,11 +109,8 @@ void* teatro(void * args) {
         return NULL;
     }
 
-    Uint32 ultimoTempoRena = SDL_GetTicks();
-    Uint32 ultimoTempoElfo = SDL_GetTicks();
     int quit = 0;
     SDL_Event e;
-    int aux = 0;
 
     while (!quit) {
         while (SDL_PollEvent(&e)) {
@@ -125,7 +122,6 @@ void* teatro(void * args) {
             }
         }
 
-        Uint32 agora = SDL_GetTicks();
  
         //santa_verifica();
 
@@ -141,26 +137,13 @@ void* teatro(void * args) {
         SDL_Rect dst_papai = {WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 150, 300, 300};
         SDL_RenderCopy(renderer, (santa_status == 1 ? tex_papai_acorda : tex_papai_dorme), NULL, &dst_papai);
 
-        // Elfos
 
-        int ajudando_count = 0;
-        
-        // Verifica quais elfos estão ajudando e armazena os primeiros 3
-        for (int i = 0; i < MAX_ELFOS; i++) {
-            if (elfos[i].status == 2) {
-                if (ajudando_count < 3) {
-                    elfos_ajudando[ajudando_count] = i; // Salva o índice do elfo ajudando
-                }
-                ajudando_count++;
-            }
-        }
         SDL_Rect rect = {75, 0, 90, 100}; // x, y, width, height
         SDL_FillRect(screenSurface, &rect, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
         for (int i = 0; i < MAX_ELFOS; i++)
         {
             SDL_Rect dst_elfo;
         
-            // Apenas desloca os 3 primeiros elfos ajudando quando ajudando_count == 3
             if (elfo_ajuda &&
                 (i == elfos_ajudando[0] || i == elfos_ajudando[1] || i == elfos_ajudando[2]))
             {

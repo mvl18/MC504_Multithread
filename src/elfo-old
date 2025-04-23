@@ -5,7 +5,6 @@
 #include "teatro.h"
 pthread_mutex_t elfos_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t fila_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t adiciona_elfo_lock = PTHREAD_MUTEX_INITIALIZER;
 sem_t semaforo_elfos;
 sem_t semaforo_tres_elfos;
 sem_t semaforo_elfos_podem_ser_ajudados;
@@ -21,6 +20,7 @@ int aguardando2 = 0;
 size_t elfos_sendo_ajudados[3] = {0};
 
 void log_elfo(){
+    pthread_mutex_lock(&log_mutex);
 
               int a = 0, b = 0;
           for(int i = 0; i < fila_get_tamanho(fila_elfos); i++){
@@ -38,10 +38,14 @@ void log_elfo(){
     }
     printf(" | ");
     for (int i = 0; i < fila_get_tamanho(fila_elfos); i++){
-        printf("%2d", (int)fila_peek(fila_elfos, i));
+        printf("%2d", fila_peek(fila_elfos, i));
     }
 
     printf("\n");
+ 
+ 
+    pthread_mutex_unlock(&log_mutex);
+
 }
 
 void elfos_init() {
@@ -91,36 +95,89 @@ void *elfo(void *args) {
   size_t id = (size_t)args;
   while (true) {
     //print_green("O elfo %d está trabalhando\n", (int)id);
-    usleep(100000);
+    usleep(1000);
 
     // sortear se o elfo está com problema
     if (random() % CHANCE_PROBLEMA == 0) {
-
+      // Se já houver um grupo de três elfos esperando pelo Santa, este elfo
+      // deve entrar na fila
       pthread_mutex_lock(&elfos_lock);
+      pthread_mutex_lock(&fila_lock);
+
       print_green("O elfo %d está com problema\n", (int)id);
       fila_append(fila_elfos, id);
+
       print_green("O elfo %d vai pra fila\n", (int)id);
       elfo_atualiza(id, 1);
+      // Agora ele deve esperar que seja um dos três primeiros da fila
       pthread_mutex_unlock(&elfos_lock);
+      pthread_mutex_unlock(&fila_lock);
       elfo_semaforo_atual[id] = 0;
-      
-
-   
-      while (true){
+      while (true)
+      {
+        for (int i = 0; i < QUANT_ELFOS; i++){
+          if(elfos[i].status == 2 ){
+            for (int j = 0; j < fila_get_tamanho(fila_elfos); j++){
+              if (fila_peek(fila_elfos, j) == i){
+                printf("bug s %d\n", i);
+                log_elfo();
+                sleep(1000);
+              }
+            }
+          }
+        }
+        for (int i = 0; i < fila_get_tamanho(fila_elfos); i++){
+          for (int j = 0; j < fila_get_tamanho(fila_elfos); j++){
+            if (i != j && fila_peek(fila_elfos, i) == fila_peek(fila_elfos, j)){
+              printf("bug r\n");
+              log_elfo();
+              sleep(1000);
+            }
+          }
+        }
+        usleep(10000);
         sem_wait(&semaforo_elfos);
+                for (int i = 0; i < QUANT_ELFOS; i++){
+          if(elfos[i].status == 2 ){
+            for (int j = 0; j < fila_get_tamanho(fila_elfos); j++){
+              if (fila_peek(fila_elfos, j) == i){
+                log_elfo();
+                sleep(1000);
+              }
+            }
+          }
+        }
+        for (int i = 0; i < fila_get_tamanho(fila_elfos); i++){
+          for (int j = 0; j < fila_get_tamanho(fila_elfos); j++){
+            if (i != j && fila_peek(fila_elfos, i) == fila_peek(fila_elfos, j)){
+              log_elfo();
+              sleep(1000);
+            }
+          }
+        }
+        print_green("Prepara %d \n", (int)id);
+        pthread_mutex_lock(&fila_lock);
+        print_green("Verifica %d \n", (int)id);
+        log_elfo();
         if ((fila_peek(fila_elfos, 0) == id) && elfos_precisando_de_ajuda < 3  ) {
           printf("%d saiu\n", (int)id);
           break;
-        } else {
-          sem_post(&semaforo_elfos);
+        } else if (elfos_precisando_de_ajuda < 3 ){
+          post_proximo_elfo(id);
         }
+        pthread_mutex_unlock(&fila_lock);
+        // Tirar um elemento da fila. Essa função será executada 3 vezes,
+        // tirando os três primeiros elfos da fila
       }
+
       fila_remove(fila_elfos, id);
       print_green("O elfo %d está no grupo que será atendido\n", (int)id);
       elfo_atualiza(id, 2);
       elfos_precisando_de_ajuda++;
       pthread_mutex_unlock(&fila_lock);
       pthread_mutex_lock(&elfos_lock);
+
+
       // Se houverem exatamente três elfos precisando de ajuda, permitimos os
       // elfos irem acordar o Santa
       if (elfos_precisando_de_ajuda == 3) {

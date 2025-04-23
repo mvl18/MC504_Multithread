@@ -54,7 +54,7 @@ void helpElves() {
     sem_post(&semaforo_elfos_podem_ser_ajudados);
   print_red("Santa está ajudando os elfos\n");
   santa_chama_elfos();
-  usleep(10000);
+  usleep(1000000);
 
   print_red("Santa terminou de ajudar esses elfos\n");
 
