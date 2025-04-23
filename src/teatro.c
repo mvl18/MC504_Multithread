@@ -14,18 +14,10 @@
 #include <unistd.h>
 #include "elfo.h"
 #include "log.h"
+#include "teatro.h"
 // Para compilar use -lSDL2 -lSDL2_image
 
-#define MAX_RENAS 10
-#define MAX_ELFOS 10
 
-typedef struct {
-    int status; // 0 = trabalhando, 1 = na fila, 2 = ajudado, 3 = finalizado
-} Elfo;
-
-typedef struct {
-    int x, y;
-} Posicao;
 
 static pthread_mutex_t ui_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -42,11 +34,11 @@ int rrandom(int min, int max){
 }
 
 // Inicializa os elfos
-Elfo elfos[MAX_ELFOS] = {0};
+Elfo elfos[QUANT_ELFOS] = {0};
 int elfos_ajudando[3] = {-1, -1, -1}; // Armazena os índices dos 3 elfos ajudando
 int elfo_ajuda = 0;
 int santa_status;
-int renas_status[MAX_RENAS] = {0};
+int renas_status[NUM_OF_REINDEERS] = {0};
 int renas_papai = 0;
 
 void acorda_rena(int id_rena){
@@ -92,7 +84,6 @@ void* teatro(void * args) {
                                           0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Surface *screenSurface = SDL_GetWindowSurface(window);
     int WINDOW_WIDTH, WINDOW_HEIGHT;
     SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
 
@@ -137,13 +128,22 @@ void* teatro(void * args) {
         SDL_Rect dst_papai = {WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 150, 300, 300};
         SDL_RenderCopy(renderer, (santa_status == 1 ? tex_papai_acorda : tex_papai_dorme), NULL, &dst_papai);
 
+        // Elfos
 
-        SDL_Rect rect = {75, 0, 90, 100}; // x, y, width, height
-        SDL_FillRect(screenSurface, &rect, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-        for (int i = 0; i < MAX_ELFOS; i++)
+        int ajudando_count = 0;
+        
+        // Verifica quais elfos estão ajudando e armazena os primeiros 3
+        for (int i = 0; i < QUANT_ELFOS; i++) {
+            if (elfos[i].status == 2) {
+                if (ajudando_count < 3) {
+                    elfos_ajudando[ajudando_count] = i; // Salva o índice do elfo ajudando
+                }
+                ajudando_count++;
+            }
+        }
+        for (int i = 0; i < QUANT_ELFOS; i++)
         {
             SDL_Rect dst_elfo;
-        
             if (elfo_ajuda &&
                 (i == elfos_ajudando[0] || i == elfos_ajudando[1] || i == elfos_ajudando[2]))
             {
@@ -153,7 +153,7 @@ void* teatro(void * args) {
             else
             {
                 // Elfos restantes permanecem em suas posições originais
-                dst_elfo.x = 50 + 50 * elfos[i].status ;
+                dst_elfo.x = 50 + 25 * elfos[i].status*elfos[i].status ;
                 dst_elfo.y = 100 + i * 100;
             }
             dst_elfo.w = 100;
@@ -164,7 +164,7 @@ void* teatro(void * args) {
         }
 
         // Renas
-        for (int i = 0; i < MAX_RENAS; i++) {
+        for (int i = 0; i < NUM_OF_REINDEERS; i++) {
             SDL_Rect dst_rena;
             if (renas_status[i])
             {

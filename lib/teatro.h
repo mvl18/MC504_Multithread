@@ -1,5 +1,5 @@
-#ifndef SANTA_WORKSHOP_H
-#define SANTA_WORKSHOP_H
+#ifndef __TEATRO_H__
+#define __TEATRO_H__
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -7,9 +7,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-// Constants
-#define MAX_RENAS 10
-#define MAX_ELFOS 10
+#include "globals.h"
+#include <limits.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include "elfo.h"
+#include "log.h"
 
 // Structures
 typedef struct {
@@ -21,11 +28,11 @@ typedef struct {
 } Posicao;
 
 // Global variables
-extern Elfo elfos[MAX_ELFOS];
+extern Elfo elfos[QUANT_ELFOS];
 extern int elfos_ajudando[3];
 extern int elfo_ajuda;
 extern int santa_status;
-extern int renas_status[MAX_RENAS];
+extern int renas_status[NUM_OF_REINDEERS];
 extern int renas_papai;
 
 // Function declarations
@@ -51,4 +58,4 @@ int main(void);
 
 void teatro_init();
 void teatro_close();
-#endif /* SANTA_WORKSHOP_H */
+#endif /* __TEATRO_H__ */

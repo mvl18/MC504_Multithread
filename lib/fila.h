@@ -29,7 +29,6 @@ void fila_append(fila_t *fila, size_t val);
 // Remove um elemento no começo da fila e o retorna
 size_t fila_pop(fila_t *fila);
 
-void fila_remove(fila_t *fila, int id);
 // Retorna o elemeto na determinada posição da fila sem modificar a fila
 // (isto é buffer[(inicio+posicao)%tamanho]
 // WARNING: é possível que o valor seja alterado logo após esta função retornar

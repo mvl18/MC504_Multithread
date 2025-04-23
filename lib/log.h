@@ -1,8 +1,6 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
-#include <pthread.h>
-// Mutex global para proteger prints
 /**
  * @brief Print message in red color
  * 

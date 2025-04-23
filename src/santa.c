@@ -18,7 +18,6 @@ void *santa(void *args) {
       santa_set_status(1);
       print_red("Santa acordou\n");
     }
-    usleep(100000);
     pthread_mutex_lock(&elfos_lock);
     pthread_mutex_lock(&reindeerMutex);
     if (reindeer_count == NUM_OF_REINDEERS) {
@@ -39,7 +38,7 @@ void *santa(void *args) {
     pthread_mutex_unlock(&reindeerMutex);
     pthread_mutex_unlock(&elfos_lock);
   }
-  sleep(1);
+  usleep(USLEEP_DELAY_FIM);
   return NULL;
 }
 
@@ -54,7 +53,7 @@ void helpElves() {
     sem_post(&semaforo_elfos_podem_ser_ajudados);
   print_red("Santa está ajudando os elfos\n");
   santa_chama_elfos();
-  usleep(1000000);
+  usleep(USLEEP_SANTA_AJUDA);
 
   print_red("Santa terminou de ajudar esses elfos\n");
 
@@ -66,7 +65,7 @@ void helpElves() {
 
 void prepareSleigh() {
   print_red("Santa está preparando o trenó\n");
-  sleep(rand() % 5);
+  usleep(USLEEP_PREPARACAO_TRENO);
   print_red("Santa terminou de preparar o trenó\n");
   santa_termina_preparacao();
   for (int i = 0; i < NUM_OF_REINDEERS; i++)

@@ -44,19 +44,6 @@ size_t fila_pop(fila_t *fila) {
   return ret;
 }
 
-void fila_remove(fila_t *fila, int id){
-  int index = fila->inicio;
-  for (int i = 0; i < fila->tamanho; i++){
-    if (fila->buffer[index] == id)
-      break;
-    index =  (index + 1) % fila->tamanho_total;
-  }
-  for (int i = fila->inicio; i < index; i++){
-    fila->buffer[(i + 1)% fila->tamanho_total] = fila->buffer[i];
-  }
-  fila->tamanho--;
-  fila->inicio = (fila->inicio + 1) % fila->tamanho_total;
-}
 
 size_t fila_peek(fila_t *fila, size_t posicao) {
   // Se estamos querendo um valor além da quantidade de itens na fila,
