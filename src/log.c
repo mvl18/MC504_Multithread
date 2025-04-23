@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-// Mutex global para proteger prints
 static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void print_with_color(const char *prefix, const char *color_code, const char *format, va_list args) {

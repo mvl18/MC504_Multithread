@@ -4,7 +4,7 @@ CC = gcc
 
 BUILD_FLAGS = -O2 -Wall
 
-INCLUDES = -Ilib -lncurses -pthread
+INCLUDES = -Ilib -lncurses -pthread -pthread -lSDL2 -lSDL2_image
 BUILD_DIR = build
 SRC_DIR = src
 

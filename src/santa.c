@@ -2,6 +2,7 @@
 #include "elfo.h"
 #include "log.h"
 #include "reindeer.h"
+#include "teatro.h"
 
 pthread_t santa_thread;
 
@@ -10,12 +11,13 @@ sem_t semaforo_acordar_santa; // Quando semáforo for exatamente quatro, ele
 
 void *santa(void *args) {
   while (true) {
-    print_red("Santa está dormindo\n");
-
-    sem_wait(&semaforo_acordar_santa); // Acorda o Santa
-
-    print_red("Santa acordou\n");
-
+    if(elfos_precisando_de_ajuda < 3){
+      print_red("Santa está dormindo\n");
+      santa_set_status(0);
+      sem_wait(&semaforo_acordar_santa); // Acorda o Santa
+      santa_set_status(1);
+      print_red("Santa acordou\n");
+    }
     pthread_mutex_lock(&elfos_lock);
     pthread_mutex_lock(&reindeerMutex);
     if (reindeer_count == NUM_OF_REINDEERS) {
@@ -36,7 +38,7 @@ void *santa(void *args) {
     pthread_mutex_unlock(&reindeerMutex);
     pthread_mutex_unlock(&elfos_lock);
   }
-
+  usleep(USLEEP_DELAY_FIM);
   return NULL;
 }
 
@@ -50,19 +52,22 @@ void helpElves() {
   for (int i = 0; i < 3; i++)
     sem_post(&semaforo_elfos_podem_ser_ajudados);
   print_red("Santa está ajudando os elfos\n");
-  sleep(rand() % 5);
+  santa_chama_elfos();
+  usleep(USLEEP_SANTA_AJUDA);
 
   print_red("Santa terminou de ajudar esses elfos\n");
 
   elfos_precisando_de_ajuda = 0;
   for (int i = 0; i < 3; i++)
     sem_post(&semaforo_ajuda_finalizada);
+  santa_libera_elfos();
 }
 
 void prepareSleigh() {
   print_red("Santa está preparando o trenó\n");
-  sleep(rand() % 5);
+  usleep(USLEEP_PREPARACAO_TRENO);
   print_red("Santa terminou de preparar o trenó\n");
+  santa_termina_preparacao();
   for (int i = 0; i < NUM_OF_REINDEERS; i++)
     sem_post(&reindeerSem);
   reindeer_count = 0;

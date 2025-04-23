@@ -24,7 +24,7 @@ void fila_append(fila_t *fila, size_t val) {
 
   pthread_mutex_lock(&fila->lock);
 
-  fila->buffer[0] = val;
+  fila->buffer[fila->fim] = val;
   fila->fim = (fila->fim + 1) % fila->tamanho_total;
   fila->tamanho++;
 
@@ -43,6 +43,7 @@ size_t fila_pop(fila_t *fila) {
 
   return ret;
 }
+
 
 size_t fila_peek(fila_t *fila, size_t posicao) {
   // Se estamos querendo um valor além da quantidade de itens na fila,
