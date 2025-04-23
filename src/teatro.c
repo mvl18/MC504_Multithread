@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "elfo.h"
+#include "log.h"
 // Para compilar use -lSDL2 -lSDL2_image
 
 #define MAX_RENAS 10
@@ -49,7 +51,7 @@ int renas_papai = 0;
 
 void acorda_rena(int id_rena){
     pthread_mutex_lock(&ui_mutex);
-    renas_status[id_rena-1] = 1;
+    renas_status[id_rena] = 1;
     pthread_mutex_unlock(&ui_mutex);
 }
  

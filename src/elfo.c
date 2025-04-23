@@ -3,21 +3,62 @@
 #include "log.h"
 #include "santa.h"
 #include "teatro.h"
-
 pthread_mutex_t elfos_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t fila_lock = PTHREAD_MUTEX_INITIALIZER;
 sem_t semaforo_elfos;
 sem_t semaforo_tres_elfos;
 sem_t semaforo_elfos_podem_ser_ajudados;
 sem_t semaforo_ajuda_finalizada;
 pthread_t threads_elfos[QUANT_ELFOS];
+int elfo_semaforo_atual[QUANT_ELFOS] = {0};
+sem_t semaforo_elfo_verificacao;
+int escolha_semaforo;
 int elfos_precisando_de_ajuda = 0;
 fila_t *fila_elfos;
+int aguardando1 = 0;
+int aguardando2 = 0;
 size_t elfos_sendo_ajudados[3] = {0};
+
+void log_elfo(){
+    pthread_mutex_lock(&log_mutex);
+
+              int a = 0, b = 0;
+          for(int i = 0; i < fila_get_tamanho(fila_elfos); i++){
+            int d = fila_peek(fila_elfos, i);
+            if(elfo_semaforo_atual[d] == 0){
+              a += 1;
+            } else {
+              b += 1;
+            }
+          }
+
+    printf("%d %d %d %d\n", escolha_semaforo, elfos_precisando_de_ajuda, a, b);
+    for (int i = 0; i < QUANT_ELFOS; i++){
+        printf("%2d", elfos[i].status);
+    }
+    printf(" | ");
+    for (int i = 0; i < fila_get_tamanho(fila_elfos); i++){
+        printf("%2d", fila_peek(fila_elfos, i));
+    }
+
+    printf("\n");
+        for (int i = 0; i < QUANT_ELFOS; i++){
+        printf("%2d", elfo_semaforo_atual[i]);
+    }
+    printf(" | ");
+    for (int i = 0; i < fila_get_tamanho(fila_elfos); i++){
+        printf("%2d", elfo_semaforo_atual[fila_peek(fila_elfos, i)]);
+    }
+    printf("\n");
+    pthread_mutex_unlock(&log_mutex);
+
+}
 
 void elfos_init() {
   // O semáforo é inicializado com três pois três elfos devem ser atendidos ao
   // mesmo tempo
   sem_init(&semaforo_elfos, 0, 3);
+  sem_init(&semaforo_elfo_verificacao, 0, 3);
 
   sem_init(&semaforo_tres_elfos, 0, 0);
 
@@ -55,40 +96,90 @@ void elfos_kill() {
 void *elfo(void *args) {
   size_t id = (size_t)args;
   while (true) {
-    print_green("O elfo %d está trabalhando\n", (int)id);
-    sleep(rand() % 5);
+    //print_green("O elfo %d está trabalhando\n", (int)id);
+    usleep(1000);
 
     // sortear se o elfo está com problema
-    if (random() % CHANCE_PROBLEMA == 1) {
-      print_green("O elfo %d está com problema\n", (int)id);
+    if (random() % CHANCE_PROBLEMA == 0) {
 
       // Se já houver um grupo de três elfos esperando pelo Santa, este elfo
       // deve entrar na fila
-      if (sem_trywait(&semaforo_elfos) != 0) {
-        print_green("O elfo %d vai pra fila\n", (int)id);
-        elfo_atualiza(id, 1);
-        fila_append(fila_elfos, id);
-        // Agora ele deve esperar que seja um dos três primeiros da fila
-        while (true) {
-          sem_wait(&semaforo_elfos);
-          if (fila_peek(fila_elfos, 0) == id ||
-              fila_peek(fila_elfos, 1) == id ||
-              fila_peek(fila_elfos, 2) == id) {
-            break;
-          }
+      pthread_mutex_lock(&elfos_lock);
+      pthread_mutex_lock(&fila_lock);
 
-          // Tirar um elemento da fila. Essa função será executada 3 vezes,
-          // tirando os três primeiros elfos da fila
-          fila_pop(fila_elfos);
+      print_green("O elfo %d está com problema\n", (int)id);
+      fila_append(fila_elfos, id);
+
+      print_green("O elfo %d vai pra fila\n", (int)id);
+      elfo_atualiza(id, 1);
+      // Agora ele deve esperar que seja um dos três primeiros da fila
+      pthread_mutex_unlock(&elfos_lock);
+      pthread_mutex_unlock(&fila_lock);
+      elfo_semaforo_atual[id] = 0;
+      while (true)
+      {
+        usleep(10000);
+        if(elfo_semaforo_atual[id] == 0){
+          pthread_mutex_lock(&fila_lock);
+          aguardando1++;
+          pthread_mutex_unlock(&fila_lock);
+          sem_wait(&semaforo_elfos);
+          pthread_mutex_lock(&fila_lock);
+          aguardando1--;
+          pthread_mutex_unlock(&fila_lock);
+
         }
+        else
+        {
+          pthread_mutex_lock(&fila_lock);
+          aguardando2++;
+          pthread_mutex_unlock(&fila_lock);
+          sem_wait(&semaforo_elfo_verificacao);
+          pthread_mutex_lock(&fila_lock);
+          aguardando2--;
+          pthread_mutex_unlock(&fila_lock);
+        }
+        elfo_semaforo_atual[id] = !elfo_semaforo_atual[id];
+        pthread_mutex_lock(&fila_lock);
+        print_green("Verifica %d \n", (int)id);
+        log_elfo();
+
+        if (fila_peek(fila_elfos, 0) == id && elfos_precisando_de_ajuda < 3  ) {
+          break;
+        } else if (elfos_precisando_de_ajuda < 3 ){
+          int a = 0, b = 0;
+          for(int i = 0; i < fila_get_tamanho(fila_elfos); i++){
+            int d = fila_peek(fila_elfos, i);
+            if(elfo_semaforo_atual[d] == 0){
+              a += 1;
+            } else {
+              b += 1;
+            }
+          }
+          if(a == 0)
+            escolha_semaforo = 1;
+          else if(b == 0)
+            escolha_semaforo = 0;
+          printf("%d goto %d\n", id, escolha_semaforo);
+          if(escolha_semaforo == 0){
+            sem_post(&semaforo_elfos); 
+          }
+          else {
+            sem_post(&semaforo_elfo_verificacao);
+          }
+        }
+        pthread_mutex_unlock(&fila_lock);
+        // Tirar um elemento da fila. Essa função será executada 3 vezes,
+        // tirando os três primeiros elfos da fila
       }
+
+      fila_remove(fila_elfos, id);
       print_green("O elfo %d está no grupo que será atendido\n", (int)id);
       elfo_atualiza(id, 2);
-
-
+      elfos_precisando_de_ajuda++;
+      pthread_mutex_unlock(&fila_lock);
       pthread_mutex_lock(&elfos_lock);
 
-      elfos_precisando_de_ajuda++;
 
       // Se houverem exatamente três elfos precisando de ajuda, permitimos os
       // elfos irem acordar o Santa
@@ -112,7 +203,12 @@ void *elfo(void *args) {
 void getHelp(int id) {
   print_green("o elfo %d está recebendo ajuda\n", (int)id);
   sem_wait(&semaforo_ajuda_finalizada);
+
+  pthread_mutex_lock(&elfos_lock);
+  int value;
   sem_post(&semaforo_elfos);
+  sem_post(&semaforo_elfo_verificacao);
   print_green("O elfo %d acabou de ser ajudado e voltará a trabalhar\n",
               (int)id);
+  pthread_mutex_unlock(&elfos_lock);
 }

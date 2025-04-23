@@ -24,7 +24,7 @@ void fila_append(fila_t *fila, size_t val) {
 
   pthread_mutex_lock(&fila->lock);
 
-  fila->buffer[0] = val;
+  fila->buffer[fila->fim] = val;
   fila->fim = (fila->fim + 1) % fila->tamanho_total;
   fila->tamanho++;
 
@@ -42,6 +42,20 @@ size_t fila_pop(fila_t *fila) {
   pthread_mutex_unlock(&fila->lock);
 
   return ret;
+}
+
+void fila_remove(fila_t *fila, int id){
+  int index = fila->inicio;
+  for (int i = 0; i < fila->tamanho; i++){
+    if (fila->buffer[index] == id)
+      break;
+    index =  (index + 1) % fila->tamanho_total;
+  }
+  for (int i = fila->inicio; i < index; i++){
+    fila->buffer[i + 1] = fila->buffer[i];
+  }
+  fila->tamanho--;
+  fila->inicio = (fila->inicio + 1) % fila->tamanho_total;
 }
 
 size_t fila_peek(fila_t *fila, size_t posicao) {

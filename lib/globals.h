@@ -5,9 +5,10 @@
 #define QUANT_ELFOS 10 // Quantidade de elfos no programa
 
 #define CHANCE_PROBLEMA                                                        \
-  3 // Chance de o elfo possuir um problema.
+  1 // Chance de o elfo possuir um problema.
      // Exemplo: 10 significa que há uma chance
      // de 1 em 10 de um elfo possuir um problema,
      // 20 significa que há uma chance de 1 em 20, etc.
 
+#define sleep_us
 #endif // !__GLOBALS_H__
