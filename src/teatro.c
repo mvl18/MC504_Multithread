@@ -88,12 +88,12 @@ void* teatro(void * args) {
     //SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
 
     // Carregar as texturas
-    SDL_Texture* tex_elfo = carregar_textura("../assets/elfo.png", renderer);
-    SDL_Texture* tex_elfoajuda = carregar_textura("../assets/elfoajuda.png", renderer);
-    SDL_Texture* tex_papai_dorme = carregar_textura("../assets/papainoeldorme.png", renderer);
-    SDL_Texture* tex_papai_acorda = carregar_textura("../assets/papainoel.png", renderer);
-    SDL_Texture* tex_rena = carregar_textura("../assets/rena.png", renderer);
-    SDL_Texture* tex_titulo = carregar_textura("../assets/titulo.png", renderer);
+    SDL_Texture* tex_elfo = carregar_textura("assets/elfo.png", renderer);
+    SDL_Texture* tex_elfoajuda = carregar_textura("assets/elfoajuda.png", renderer);
+    SDL_Texture* tex_papai_dorme = carregar_textura("assets/papainoeldorme.png", renderer);
+    SDL_Texture* tex_papai_acorda = carregar_textura("assets/papainoel.png", renderer);
+    SDL_Texture* tex_rena = carregar_textura("assets/rena.png", renderer);
+    SDL_Texture* tex_titulo = carregar_textura("assets/titulo.png", renderer);
 
     if (!tex_elfo || !tex_elfoajuda || !tex_papai_dorme || !tex_papai_acorda || !tex_rena || !tex_titulo) {
         printf("Erro ao carregar imagens.\n");
