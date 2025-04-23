@@ -16,7 +16,7 @@ void getHitched(int id) { print_yellow("Rena %d: Engatada ao trenó!\n", id); }
 void *reindeer(void *args) {
   size_t id = (size_t)args;
 
-  sleep(USLEEP_RENA_FERIAS); // Férias
+  usleep(USLEEP_RENA_FERIAS); // Férias
   pthread_mutex_lock(&reindeerMutex);
   acorda_rena(id);
   reindeer_count++;

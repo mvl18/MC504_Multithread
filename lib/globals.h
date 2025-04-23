@@ -4,6 +4,9 @@
 #define NUM_OF_REINDEERS 9
 #define QUANT_ELFOS 10 // Quantidade de elfos no programa
 
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
+
 #define CHANCE_PROBLEMA                                                        \
   5 // Chance de o elfo possuir um problema.
      // Exemplo: 10 significa que há uma chance

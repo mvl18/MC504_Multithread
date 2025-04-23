@@ -81,11 +81,11 @@ void* teatro(void * args) {
     srand(time(NULL));
 
     SDL_Window* window = SDL_CreateWindow("Oficina do Papai Noel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                          0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    int WINDOW_WIDTH, WINDOW_HEIGHT;
-    SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
+    //int WINDOW_WIDTH, WINDOW_HEIGHT;
+    //SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
 
     // Carregar as texturas
     SDL_Texture* tex_elfo = carregar_textura("../assets/elfo.png", renderer);
