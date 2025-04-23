@@ -1,6 +1,7 @@
 #include "reindeer.h"
 #include "log.h"
 #include "santa.h"
+#include "teatro.h"
 
 pthread_mutex_t reindeerMutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -17,6 +18,7 @@ void *reindeer(void *args) {
 
   sleep(rand() % 10 + 5); // Férias
   pthread_mutex_lock(&reindeerMutex);
+  acorda_rena(id);
   reindeer_count++;
   print_yellow("Rena %li voltou. Total: %d\n", id, reindeer_count);
   if (reindeer_count == NUM_OF_REINDEERS)

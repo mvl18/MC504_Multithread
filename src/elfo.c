@@ -2,6 +2,7 @@
 #include "elfo.h"
 #include "log.h"
 #include "santa.h"
+#include "teatro.h"
 
 pthread_mutex_t elfos_lock = PTHREAD_MUTEX_INITIALIZER;
 sem_t semaforo_elfos;
@@ -65,6 +66,7 @@ void *elfo(void *args) {
       // deve entrar na fila
       if (sem_trywait(&semaforo_elfos) != 0) {
         print_green("O elfo %d vai pra fila\n", (int)id);
+        elfo_atualiza(id, 1);
         fila_append(fila_elfos, id);
         // Agora ele deve esperar que seja um dos três primeiros da fila
         while (true) {
@@ -81,6 +83,7 @@ void *elfo(void *args) {
         }
       }
       print_green("O elfo %d está no grupo que será atendido\n", (int)id);
+      elfo_atualiza(id, 2);
 
 
       pthread_mutex_lock(&elfos_lock);
@@ -101,6 +104,7 @@ void *elfo(void *args) {
       sem_wait(&semaforo_elfos_podem_ser_ajudados);
       getHelp(id);
     }
+    elfo_atualiza(id, 0);
   }
 }
 
