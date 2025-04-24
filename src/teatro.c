@@ -15,9 +15,13 @@
 #include "elfo.h"
 #include "log.h"
 #include "teatro.h"
-// Para compilar use -lSDL2 -lSDL2_image
 
-
+#include "elfoajuda_png.h"
+#include "elfo_png.h"
+#include "papainoeldorme_png.h"
+#include "papainoel_png.h"
+#include "rena_png.h"
+#include "titulo_png.h"
 
 static pthread_mutex_t ui_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -86,14 +90,94 @@ void* teatro(void * args) {
 
     //int WINDOW_WIDTH, WINDOW_HEIGHT;
     //SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
+    // Elfo ajuda
+    SDL_Surface* loaded_surface_elfoajuda = IMG_Load_RW(SDL_RWFromMem(elfoajuda_png, elfoajuda_png_len), 1);
+    if (!loaded_surface_elfoajuda) {
+        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_elfoajuda = SDL_CreateTextureFromSurface(renderer, loaded_surface_elfoajuda);
+    if (!tex_elfoajuda) {
+        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_elfoajuda);
+        return 0;
+    }
+    // Elfo
+    SDL_Surface* loaded_surface_elfo = IMG_Load_RW(SDL_RWFromMem(elfo_png, elfo_png_len), 1);
+    if (!loaded_surface_elfo) {
+        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_elfo = SDL_CreateTextureFromSurface(renderer, loaded_surface_elfo);
+    if (!tex_elfo) {
+        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_elfo);
+        return 0;
+    }
+
+    // Papai noel dorme
+    SDL_Surface* loaded_surface_papai_dorme = IMG_Load_RW(SDL_RWFromMem(papainoeldorme_png, papainoeldorme_png_len), 1);
+    if (!loaded_surface_papai_dorme) {
+        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_papai_dorme = SDL_CreateTextureFromSurface(renderer, loaded_surface_papai_dorme);
+    if (!tex_papai_dorme) {
+        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_papai_dorme);
+        return 0;
+    }
+    // papai noel acorda
+    SDL_Surface* loaded_surface_papai_acorda = IMG_Load_RW(SDL_RWFromMem(papainoel_png, papainoel_png_len), 1);
+    if (!loaded_surface_papai_acorda) {
+        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_papai_acorda = SDL_CreateTextureFromSurface(renderer, loaded_surface_papai_acorda);
+    if (!tex_papai_acorda) {
+        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_papai_acorda);
+        return 0;
+    }
+    // titulo
+    SDL_Surface* loaded_surface_titulo = IMG_Load_RW(SDL_RWFromMem(titulo_png, titulo_png_len), 1);
+    if (!loaded_surface_titulo) {
+        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_titulo = SDL_CreateTextureFromSurface(renderer, loaded_surface_titulo);
+    if (!tex_elfo) {
+        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_titulo);
+        return 0;
+    }
+    // rena
+    SDL_Surface* loaded_surface_rena = IMG_Load_RW(SDL_RWFromMem(rena_png, rena_png_len), 1);
+    if (!loaded_surface_rena) {
+        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_rena = SDL_CreateTextureFromSurface(renderer, loaded_surface_rena);
+    if (!tex_elfo) {
+        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_rena);
+        return 0;
+    }
+
 
     // Carregar as texturas
-    SDL_Texture* tex_elfo = carregar_textura("assets/elfo.png", renderer);
-    SDL_Texture* tex_elfoajuda = carregar_textura("assets/elfoajuda.png", renderer);
-    SDL_Texture* tex_papai_dorme = carregar_textura("assets/papainoeldorme.png", renderer);
-    SDL_Texture* tex_papai_acorda = carregar_textura("assets/papainoel.png", renderer);
-    SDL_Texture* tex_rena = carregar_textura("assets/rena.png", renderer);
-    SDL_Texture* tex_titulo = carregar_textura("assets/titulo.png", renderer);
+    //SDL_Texture* tex_elfo = carregar_textura("assets/elfo.png", renderer);
+    //SDL_Texture* tex_elfoajuda = carregar_textura("assets/elfoajuda.png", renderer);
+    //SDL_Texture* tex_papai_dorme = carregar_textura("assets/papainoeldorme.png", renderer);
+    //SDL_Texture* tex_papai_acorda = carregar_textura("assets/papainoel.png", renderer);
+    //SDL_Texture* tex_rena = carregar_textura("assets/rena.png", renderer);
+    //SDL_Texture* tex_titulo = carregar_textura("assets/titulo.png", renderer);
 
     if (!tex_elfo || !tex_elfoajuda || !tex_papai_dorme || !tex_papai_acorda || !tex_rena || !tex_titulo) {
         printf("Erro ao carregar imagens.\n");
