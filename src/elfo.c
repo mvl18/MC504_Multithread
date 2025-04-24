@@ -53,12 +53,12 @@ void elfos_kill() {
 void *elfo(void *args) {
   size_t id = (size_t)args;
   while (true) {
-    print_green("O elfo %d está trabalhando\n", (int)id);
+    print_green("O elfo %d esta trabalhando\n", (int)id);
     usleep(USLEEP_ELFO_TRABALHANDO);
 
     // sortear se o elfo está com problema
     if (random() % CHANCE_PROBLEMA == 0) {
-      print_green("O elfo %d está com problema\n", (int)id);
+      print_green("O elfo %d esta com problema\n", (int)id);
       fila_append(fila_elfos, id);
       print_green("O elfo %d vai pra fila\n", (int)id);
       elfo_atualiza(id, 1);
@@ -72,7 +72,7 @@ void *elfo(void *args) {
         }
       }
       fila_pop(fila_elfos);
-      print_green("O elfo %d está no grupo que será atendido\n", (int)id);
+      print_green("O elfo %d esta no grupo que sera atendido\n", (int)id);
       elfo_atualiza(id, 2);
       pthread_mutex_lock(&elfos_lock);
       elfos_precisando_de_ajuda++;
@@ -82,7 +82,7 @@ void *elfo(void *args) {
         sem_post(&semaforo_acordar_santa);
       } else if (elfos_precisando_de_ajuda > 3) {
         fprintf(stderr,
-                "Há mais de 3 elfos precisando de ajuda ao mesmo tempo\n");
+                "Ha mais de 3 elfos precisando de ajuda ao mesmo tempo\n");
       }
 
       pthread_mutex_unlock(&elfos_lock);
@@ -96,12 +96,12 @@ void *elfo(void *args) {
 
 // Função executada pelo elfo quando ele está recebendo ajuda
 void getHelp(int id) {
-  print_green("o elfo %d está recebendo ajuda\n", (int)id);
+  print_green("O elfo %d esta recebendo ajuda\n", (int)id);
   sem_wait(&semaforo_ajuda_finalizada);
 
   pthread_mutex_lock(&elfos_lock);
   sem_post(&semaforo_elfos); 
-  print_green("O elfo %d acabou de ser ajudado e voltará a trabalhar\n",
+  print_green("O elfo %d acabou de ser ajudado e voltara a trabalhar\n",
               (int)id);
   pthread_mutex_unlock(&elfos_lock);
 }

@@ -11,7 +11,7 @@ int reindeer_count = 0;
 
 pthread_t reindeer_threads[NUM_OF_REINDEERS];
 
-void getHitched(int id) { print_yellow("Rena %d: Engatada ao trenó!\n", id); }
+void getHitched(int id) { print_yellow("Rena %d: Engatada ao treno!\n", id); }
 
 void *reindeer(void *args) {
   size_t id = (size_t)args;

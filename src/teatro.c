@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -89,6 +90,19 @@ void* teatro(void * args) {
     SDL_Window* window = SDL_CreateWindow("Oficina do Papai Noel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+
+    // Inicialização do TTF
+    if (TTF_Init() == -1) {
+        printf("Erro ao inicializar SDL_ttf: %s\n", TTF_GetError());
+        return 0;
+    }
+
+    TTF_Font *font = TTF_OpenFont("assets/monica.ttf", 24);
+    if (!font) {
+        printf("Erro ao carregar fonte: %s\n", TTF_GetError());
+        return 0;
+    }
 
     //int WINDOW_WIDTH, WINDOW_HEIGHT;
     //SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
@@ -224,6 +238,36 @@ void* teatro(void * args) {
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
 
+        // Renderizar o log na parte inferior da tela
+        for (int i = 0; i < LOG_LINES; i++) {
+            int log_line = (log_index + i) % LOG_LINES; // Acessa as linhas do buffer circular
+
+            char clean_text[LOG_LINE_LENGTH];
+            remove_ansi_sequences(log_buffer[log_line], clean_text); // Remove sequências ANSI
+            remove_newline(clean_text);
+            
+            // Determinar a cor com base no prefixo
+            SDL_Color textColor = {255, 255, 255, 255}; // Cor padrão (branca)
+            if (strstr(clean_text, "Santa")) {
+                textColor = (SDL_Color){255, 0, 0, 255}; // Vermelho
+            } else if (strstr(clean_text, "O")) {
+                textColor = (SDL_Color){0, 255, 0, 255}; // Verde
+            } else if (strstr(clean_text, "Rena")) {
+                textColor = (SDL_Color){255, 255, 0, 255}; // Amarelo
+            } else if (strstr(clean_text, "O Programa")) {
+                textColor = (SDL_Color){0, 0, 255, 255}; // Azul
+            }
+
+            SDL_Surface *textSurface = TTF_RenderText_Blended(font, clean_text, textColor);
+            if (textSurface) {
+                SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                SDL_Rect textRect = {WINDOW_WIDTH/2 - 200, WINDOW_HEIGHT - 280 + i * 30, textSurface->w, textSurface->h};
+                SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                SDL_FreeSurface(textSurface);
+                SDL_DestroyTexture(textTexture);
+            }
+        }
+
         // Título
         SDL_Rect rect_titulo = {WINDOW_WIDTH / 2 - 350, 20, 700, 100}; // (posição horizontal apartir da lateral, posição vertical apartir do topo, largura do retangulo, altura do retangulo)
         SDL_RenderCopy(renderer, tex_titulo, NULL, &rect_titulo);
@@ -302,8 +346,10 @@ void* teatro(void * args) {
     SDL_DestroyTexture(tex_papai_acorda);
     SDL_DestroyTexture(tex_rena);
     SDL_DestroyTexture(tex_treno);
+    TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 

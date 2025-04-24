@@ -12,7 +12,7 @@ sem_t semaforo_acordar_santa; // Quando semáforo for exatamente quatro, ele
 void *santa(void *args) {
   while (true) {
     if(elfos_precisando_de_ajuda < 3){
-      print_red("Santa está dormindo\n");
+      print_red("Santa esta dormindo\n");
       santa_set_status(0);
       sem_wait(&semaforo_acordar_santa); // Acorda o Santa
       santa_set_status(1);
@@ -51,7 +51,7 @@ void santa_init() {
 void helpElves() {
   for (int i = 0; i < 3; i++)
     sem_post(&semaforo_elfos_podem_ser_ajudados);
-  print_red("Santa está ajudando os elfos\n");
+  print_red("Santa esta ajudando os elfos\n");
   santa_chama_elfos();
   usleep(USLEEP_SANTA_AJUDA);
 
@@ -64,10 +64,10 @@ void helpElves() {
 }
 
 void prepareSleigh() {
-  print_red("Santa está preparando o trenó\n");
+  print_red("Santa esta preparando o treno\n");
   treno_status = 1;
   usleep(USLEEP_PREPARACAO_TRENO);
-  print_red("Santa terminou de preparar o trenó\n");
+  print_red("Santa terminou de preparar o treno\n");
   santa_termina_preparacao();
   for (int i = 0; i < NUM_OF_REINDEERS; i++)
     sem_post(&reindeerSem);
