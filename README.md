@@ -29,7 +29,7 @@ make
 
 ## Execução
 
-Para executar o projeto, use o seguinte comando:
+Para executar o projeto, utilize o seguinte comando:
 ```bash
 ./build/santa
 ```
@@ -39,7 +39,7 @@ Para executar o projeto, use o seguinte comando:
 - **Makefile**: Script para compilar o código-fonte.
 - **src/**: Diretório contendo todos os arquivos de origem do projeto.
 - **lib/**: Diretório contendo cabeçalhos necessários para a compilação e execução do projeto.
-- **assetis**: Diretório contendo imagens e outros recursos utilizados no projeto.
+- **assets/**: Diretório contendo imagens e outros recursos utilizados no projeto.
 
 ## Autores
 
