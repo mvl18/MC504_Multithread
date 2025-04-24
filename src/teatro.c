@@ -22,6 +22,7 @@
 #include "papainoel_png.h"
 #include "rena_png.h"
 #include "titulo_png.h"
+#include "treno_png.h"
 
 static pthread_mutex_t ui_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -44,6 +45,7 @@ int elfo_ajuda = 0;
 int santa_status;
 int renas_status[NUM_OF_REINDEERS] = {0};
 int renas_papai = 0;
+int treno_status = 0;
 
 void acorda_rena(int id_rena){
     pthread_mutex_lock(&ui_mutex);
@@ -93,16 +95,17 @@ void* teatro(void * args) {
     // Elfo ajuda
     SDL_Surface* loaded_surface_elfoajuda = IMG_Load_RW(SDL_RWFromMem(elfoajuda_png, elfoajuda_png_len), 1);
     if (!loaded_surface_elfoajuda) {
-        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        printf("Erro ao carregar a imagem do elfo_ajuda: %s\n", IMG_GetError());
         return 0;
     }
 
     SDL_Texture* tex_elfoajuda = SDL_CreateTextureFromSurface(renderer, loaded_surface_elfoajuda);
     if (!tex_elfoajuda) {
-        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        printf("Erro ao criar textura do elfo_ajuda: %s\n", SDL_GetError());
         SDL_FreeSurface(loaded_surface_elfoajuda);
         return 0;
     }
+
     // Elfo
     SDL_Surface* loaded_surface_elfo = IMG_Load_RW(SDL_RWFromMem(elfo_png, elfo_png_len), 1);
     if (!loaded_surface_elfo) {
@@ -120,53 +123,70 @@ void* teatro(void * args) {
     // Papai noel dorme
     SDL_Surface* loaded_surface_papai_dorme = IMG_Load_RW(SDL_RWFromMem(papainoeldorme_png, papainoeldorme_png_len), 1);
     if (!loaded_surface_papai_dorme) {
-        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        printf("Erro ao carregar a imagem do papai_dorme: %s\n", IMG_GetError());
         return 0;
     }
 
     SDL_Texture* tex_papai_dorme = SDL_CreateTextureFromSurface(renderer, loaded_surface_papai_dorme);
     if (!tex_papai_dorme) {
-        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        printf("Erro ao criar textura do papai_dorme: %s\n", SDL_GetError());
         SDL_FreeSurface(loaded_surface_papai_dorme);
         return 0;
     }
+
     // papai noel acorda
     SDL_Surface* loaded_surface_papai_acorda = IMG_Load_RW(SDL_RWFromMem(papainoel_png, papainoel_png_len), 1);
     if (!loaded_surface_papai_acorda) {
-        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        printf("Erro ao carregar a imagem do papai_acorda: %s\n", IMG_GetError());
         return 0;
     }
 
     SDL_Texture* tex_papai_acorda = SDL_CreateTextureFromSurface(renderer, loaded_surface_papai_acorda);
     if (!tex_papai_acorda) {
-        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+        printf("Erro ao criar textura do papai_acorda: %s\n", SDL_GetError());
         SDL_FreeSurface(loaded_surface_papai_acorda);
         return 0;
     }
+
     // titulo
     SDL_Surface* loaded_surface_titulo = IMG_Load_RW(SDL_RWFromMem(titulo_png, titulo_png_len), 1);
     if (!loaded_surface_titulo) {
-        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        printf("Erro ao carregar a imagem do titulo: %s\n", IMG_GetError());
         return 0;
     }
 
     SDL_Texture* tex_titulo = SDL_CreateTextureFromSurface(renderer, loaded_surface_titulo);
-    if (!tex_elfo) {
-        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+    if (!tex_titulo) {
+        printf("Erro ao criar textura do titulo: %s\n", SDL_GetError());
         SDL_FreeSurface(loaded_surface_titulo);
         return 0;
     }
+
     // rena
     SDL_Surface* loaded_surface_rena = IMG_Load_RW(SDL_RWFromMem(rena_png, rena_png_len), 1);
     if (!loaded_surface_rena) {
-        printf("Erro ao carregar a imagem do elfo: %s\n", IMG_GetError());
+        printf("Erro ao carregar a imagem da rena: %s\n", IMG_GetError());
         return 0;
     }
 
     SDL_Texture* tex_rena = SDL_CreateTextureFromSurface(renderer, loaded_surface_rena);
-    if (!tex_elfo) {
-        printf("Erro ao criar textura do elfo: %s\n", SDL_GetError());
+    if (!tex_rena) {
+        printf("Erro ao criar textura da rena: %s\n", SDL_GetError());
         SDL_FreeSurface(loaded_surface_rena);
+        return 0;
+    }
+
+    // treno
+    SDL_Surface* loaded_surface_treno = IMG_Load_RW(SDL_RWFromMem(treno_png, treno_png_len), 1);
+    if (!loaded_surface_treno) {
+        printf("Erro ao carregar a imagem do treno: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    SDL_Texture* tex_treno = SDL_CreateTextureFromSurface(renderer, loaded_surface_treno);
+    if (!tex_treno) {
+        printf("Erro ao criar textura do treno: %s\n", SDL_GetError());
+        SDL_FreeSurface(loaded_surface_treno);
         return 0;
     }
 
@@ -179,10 +199,10 @@ void* teatro(void * args) {
     //SDL_Texture* tex_rena = carregar_textura("assets/rena.png", renderer);
     //SDL_Texture* tex_titulo = carregar_textura("assets/titulo.png", renderer);
 
-    if (!tex_elfo || !tex_elfoajuda || !tex_papai_dorme || !tex_papai_acorda || !tex_rena || !tex_titulo) {
-        printf("Erro ao carregar imagens.\n");
-        return NULL;
-    }
+    //if (!tex_elfo || !tex_elfoajuda || !tex_papai_dorme || !tex_papai_acorda || !tex_rena || !tex_titulo) {
+    //    printf("Erro ao carregar imagens.\n");
+    //    return NULL;
+    //}
 
     int quit = 0;
     SDL_Event e;
@@ -231,7 +251,7 @@ void* teatro(void * args) {
             if (elfo_ajuda &&
                 (i == elfos_ajudando[0] || i == elfos_ajudando[1] || i == elfos_ajudando[2]))
             {
-                dst_elfo.x = WINDOW_WIDTH / 2 - 150;                                                    // Perto do centro da tela
+                dst_elfo.x = WINDOW_WIDTH / 2 - 180;                                                    // Perto do centro da tela
                 dst_elfo.y = 200 + (i == elfos_ajudando[0] ? 0 : (i == elfos_ajudando[1] ? 100 : 200)); // Espaçamento vertical
             }
             else
@@ -247,17 +267,23 @@ void* teatro(void * args) {
             SDL_RenderCopy(renderer, (elfos[i].status ? tex_elfoajuda : tex_elfo), NULL, &dst_elfo);
         }
 
+        // Renderizar o trenó se todas as renas estiverem engatadas
+        if (treno_status) {
+            SDL_Rect dst_treno = {WINDOW_WIDTH / 2 - 170, WINDOW_HEIGHT / 2 - 50, 400, 300}; // Ajuste a posição e o tamanho
+            SDL_RenderCopy(renderer, tex_treno, NULL, &dst_treno);
+        }// (posição horizontal apartir da lateral, posição vertical apartir do topo, largura do retangulo, altura do retangulo)
+
         // Renas
         for (int i = 0; i < NUM_OF_REINDEERS; i++) {
             SDL_Rect dst_rena;
             if (renas_status[i])
             {
                 if (renas_papai) {
-                    dst_rena.x = 450 + (i % 3) * 120;
+                    dst_rena.x = WINDOW_WIDTH / 2 + 300 + (i % 3) * 120;
                     dst_rena.y = 450 + (i / 3) * 120;
                 } else {
-                    dst_rena.x = WINDOW_WIDTH - 100;
-                    dst_rena.y = 50 + i * 100;
+                    dst_rena.x = WINDOW_WIDTH - 120;
+                    dst_rena.y = 100 + i * 100;
                 }
                 dst_rena.w = 100;
                 dst_rena.h = 100;
@@ -275,6 +301,7 @@ void* teatro(void * args) {
     SDL_DestroyTexture(tex_papai_dorme);
     SDL_DestroyTexture(tex_papai_acorda);
     SDL_DestroyTexture(tex_rena);
+    SDL_DestroyTexture(tex_treno);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     IMG_Quit();

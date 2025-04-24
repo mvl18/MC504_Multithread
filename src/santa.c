@@ -65,6 +65,7 @@ void helpElves() {
 
 void prepareSleigh() {
   print_red("Santa está preparando o trenó\n");
+  treno_status = 1;
   usleep(USLEEP_PREPARACAO_TRENO);
   print_red("Santa terminou de preparar o trenó\n");
   santa_termina_preparacao();

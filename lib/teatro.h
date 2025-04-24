@@ -34,6 +34,7 @@ extern int elfo_ajuda;
 extern int santa_status;
 extern int renas_status[NUM_OF_REINDEERS];
 extern int renas_papai;
+extern int treno_status;
 
 // Function declarations
 SDL_Texture* carregar_textura(const char* path, SDL_Renderer* renderer);
