@@ -53,15 +53,20 @@ static void print_with_color(const char *prefix, const char *color_code, const c
 
     pthread_mutex_unlock(&log_mutex);
 }
-
+void vadd_to_log(const char *format, va_list args){
+    va_list copy;
+    va_copy(copy, args);
+    char message[LOG_LINE_LENGTH];
+    vsnprintf(message, LOG_LINE_LENGTH, format, copy);
+    add_to_log(message);
+    va_end(copy);
+}
 void print_red(const char *format, ...) {
     va_list args;
     va_start(args, format);
 
     // Formata a mensagem e adiciona ao buffer circular
-    char message[LOG_LINE_LENGTH];
-    vsnprintf(message, LOG_LINE_LENGTH, format, args);
-    add_to_log(message);
+    vadd_to_log(format, args);
 
     print_with_color("[Santa]: ", "\033[0;31m", format, args);
     va_end(args);
@@ -71,9 +76,7 @@ void print_green(const char *format, ...) {
     va_list args;
     va_start(args, format);
 
-    char message[LOG_LINE_LENGTH];
-    vsnprintf(message, LOG_LINE_LENGTH, format, args);
-    add_to_log(message);
+    vadd_to_log(format, args);
 
     print_with_color("[Elfo]: ", "\033[0;32m", format, args);
     va_end(args);
@@ -83,9 +86,7 @@ void print_yellow(const char *format, ...) {
     va_list args;
     va_start(args, format);
 
-    char message[LOG_LINE_LENGTH];
-    vsnprintf(message, LOG_LINE_LENGTH, format, args);
-    add_to_log(message);
+    vadd_to_log(format, args);
 
     print_with_color("[Rena]: ", "\033[0;33m", format, args);
     va_end(args);
@@ -95,9 +96,7 @@ void print_blue(const char *format, ...) {
     va_list args;
     va_start(args, format);
 
-    char message[LOG_LINE_LENGTH];
-    vsnprintf(message, LOG_LINE_LENGTH, format, args);
-    add_to_log(message);
+    vadd_to_log(format, args);
 
     print_with_color("[System]: ", "\033[0;34m", format, args);
     va_end(args);
