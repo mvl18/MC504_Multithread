@@ -14,12 +14,12 @@ Para compilar o projeto, você precisará ter instalado as bibliotecas SDL2, SDL
 
 - **Arch Linux**:
   ```bash
-  sudo pacman -S sdl2 sdl2_image libpthread
+  sudo pacman -S sdl2 sdl2_image sdl2_ttf libpthread
   ```
 
 - **Debian/Ubuntu**:
   ```bash
-  sudo apt install libsdl2-dev libsdl2-image-dev libpthread-dev
+  sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libpthread-dev
   ```
 
 Depois de instalar as bibliotecas necessárias, execute o seguinte comando para compilar o projeto:
@@ -43,7 +43,7 @@ Para executar o projeto, utilize o seguinte comando:
 
 ## Autores
 
-- [Giancarlo Bonvenuto](https://github.com/GoliasVictor)
-- [José Victor](https://github.com/gBonvenuto)
+- [Giancarlo Bonvenuto](https://github.com/gBonvenuto)
+- [José Victor](https://github.com/GoliasVictor)
 - [Julio Avelar](https://github.com/JN513)
 - [Matheus Veiga](https://github.com/mvl18)
