@@ -2,7 +2,7 @@
 #define __GLOBALS_H__
 
 #define NUM_OF_REINDEERS 9
-#define QUANT_ELFOS 10 // Quantidade de elfos no programa
+#define QUANT_ELFOS 9 // Quantidade de elfos no programa
 
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080

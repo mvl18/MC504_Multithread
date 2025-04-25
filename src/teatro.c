@@ -293,16 +293,18 @@ void* teatro(void * args) {
         {
             SDL_Rect dst_elfo;
             if (elfo_ajuda &&
-                (i == elfos_ajudando[0] || i == elfos_ajudando[1] || i == elfos_ajudando[2]))
-            {
-                dst_elfo.x = WINDOW_WIDTH / 2 - 180;                                                    // Perto do centro da tela
-                dst_elfo.y = 200 + (i == elfos_ajudando[0] ? 0 : (i == elfos_ajudando[1] ? 100 : 200)); // Espaçamento vertical
-            }
-            else
-            {
-                // Elfos restantes permanecem em suas posições originais
-                dst_elfo.x = 50 + 25 * elfos[i].status*elfos[i].status ;
-                dst_elfo.y = 100 + i * 100;
+                (i == elfos_ajudando[0] || i == elfos_ajudando[1] || i == elfos_ajudando[2])) {
+                // Posição central (próxima ao Papai Noel)
+                dst_elfo.x = WINDOW_WIDTH / 2 - 180;
+                dst_elfo.y = 200 + (i == elfos_ajudando[0] ? 0 : (i == elfos_ajudando[1] ? 100 : 200));
+            } else if (elfos[i].status == 1 || elfos[i].status == 2) {
+                // Posição destacada para elfos que pedem ajuda
+                dst_elfo.x = 80 + (i / 10) * 150;
+                dst_elfo.y = 80 + (i % 10) * 100;
+            } else {
+                // Posição original
+                dst_elfo.x = 50 + (i / 10) * 150; // Colunas de 10 elfos
+                dst_elfo.y = 80 + (i % 10) * 100;
             }
             dst_elfo.w = 100;
             dst_elfo.h = 100;
@@ -315,7 +317,7 @@ void* teatro(void * args) {
         if (treno_status) {
             SDL_Rect dst_treno = {WINDOW_WIDTH / 2 - 170, WINDOW_HEIGHT / 2 - 50, 400, 300}; // Ajuste a posição e o tamanho
             SDL_RenderCopy(renderer, tex_treno, NULL, &dst_treno);
-        }// (posição horizontal apartir da lateral, posição vertical apartir do topo, largura do retangulo, altura do retangulo)
+        }
 
         // Renas
         for (int i = 0; i < NUM_OF_REINDEERS; i++) {
@@ -339,7 +341,7 @@ void* teatro(void * args) {
         SDL_Delay(100);
     }
 
-    // Cleanup
+    // Limpeza
     SDL_DestroyTexture(tex_elfo);
     SDL_DestroyTexture(tex_elfoajuda);
     SDL_DestroyTexture(tex_papai_dorme);
