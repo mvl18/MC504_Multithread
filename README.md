@@ -10,7 +10,7 @@ Este projeto implementa um simulador do problema do Papai Noel, utilizando múlt
 
 ## Compilação
 
-Para compilar o projeto, você precisará ter instalado as bibliotecas SDL2, SDL2_images e pthread. As instruções específicas para instalação variam dependendo do seu sistema operacional:
+Para compilar o projeto, você precisará ter instalado as bibliotecas SDL2, SDL2_images, SDL2_ttf e pthread. As instruções específicas para instalação variam dependendo do seu sistema operacional:
 
 - **Arch Linux**:
   ```bash
