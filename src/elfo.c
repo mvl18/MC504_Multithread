@@ -3,19 +3,20 @@
 #include "log.h"
 #include "santa.h"
 #include "teatro.h"
+#include "fifo_sem.h"
 pthread_mutex_t elfos_lock = PTHREAD_MUTEX_INITIALIZER;
-sem_t semaforo_elfos;
+fifo_sem_t semaforo_elfos;
 sem_t semaforo_tres_elfos;
 sem_t semaforo_elfos_podem_ser_ajudados;
 sem_t semaforo_ajuda_finalizada;
 pthread_t threads_elfos[QUANT_ELFOS];
 int elfos_precisando_de_ajuda = 0;
-fila_t *fila_elfos;
+
 
 void elfos_init() {
   // O semáforo é inicializado com três pois três elfos devem ser atendidos ao
   // mesmo tempo
-  sem_init(&semaforo_elfos, 0, 3);
+  fifo_sem_init(&semaforo_elfos, 3);
 
   sem_init(&semaforo_tres_elfos, 0, 0);
 
@@ -24,8 +25,7 @@ void elfos_init() {
   // Este semáforo deve se tornar 3 para avisar os três elfos de que a ajuda
   // foi finalizada
   sem_init(&semaforo_ajuda_finalizada, 0, 0);
-
-  fila_elfos = fila_init(QUANT_ELFOS);
+  
 
   // Criar Threads de Elfos
   for (size_t i = 0; i < QUANT_ELFOS; i++) {
@@ -38,7 +38,7 @@ void elfos_close() {
   for (size_t i = 0; i < QUANT_ELFOS; i++) {
     pthread_join(threads_elfos[i], NULL);
   }
-  fila_destroy(fila_elfos);
+  fifo_sem_destroy(&semaforo_elfos);
   pthread_mutex_destroy(&elfos_lock);
 }
 
@@ -59,19 +59,9 @@ void *elfo(void *args) {
     // sortear se o elfo está com problema
     if (random() % CHANCE_PROBLEMA == 0) {
       print_green("O elfo %d esta com problema\n", (int)id);
-      fila_append(fila_elfos, id);
       print_green("O elfo %d vai pra fila\n", (int)id);
       elfo_atualiza(id, 1);
-
-      while (true){
-        sem_wait(&semaforo_elfos);
-        if ((fila_peek(fila_elfos, 0) == id) && elfos_precisando_de_ajuda < 3  ) { 
-          break;
-        } else {
-          sem_post(&semaforo_elfos);
-        }
-      }
-      fila_pop(fila_elfos);
+      fifo_sem_wait(&semaforo_elfos, id);
       print_green("O elfo %d esta no grupo que sera atendido\n", (int)id);
       elfo_atualiza(id, 2);
       pthread_mutex_lock(&elfos_lock);
@@ -99,7 +89,7 @@ void getHelp(int id) {
   print_green("O elfo %d esta recebendo ajuda\n", (int)id);
   sem_wait(&semaforo_ajuda_finalizada);
 
-  sem_post(&semaforo_elfos); 
+  fifo_sem_post(&semaforo_elfos); 
   print_green("O elfo %d acabou de ser ajudado e voltara a trabalhar\n",
               (int)id);
 }

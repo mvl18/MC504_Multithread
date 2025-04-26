@@ -14,9 +14,6 @@
 extern pthread_mutex_t elfos_lock; // Lock para todos as variáveis relacionadas
                                    // aos elfos que necessitarem
 
-extern sem_t semaforo_elfos; // Este semáforo indica quantos faltam para haver
-                             // exatamente três elfos precisando de ajuda
-
 extern sem_t semaforo_tres_elfos; // Este semáforo se torna 1 quando há 3 elfos
                                   // esperando para serem ajudados
 
