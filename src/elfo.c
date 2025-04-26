@@ -58,8 +58,7 @@ void *elfo(void *args) {
 
     // sortear se o elfo está com problema
     if (random() % CHANCE_PROBLEMA == 0) {
-      print_green("O elfo %d esta com problema\n", (int)id);
-      print_green("O elfo %d vai pra fila\n", (int)id);
+      print_green("O elfo %d esta com problema, e vai pro fifo\n", (int)id);
       elfo_atualiza(id, 1);
       fifo_sem_wait(&semaforo_elfos, id);
       print_green("O elfo %d esta no grupo que sera atendido\n", (int)id);
