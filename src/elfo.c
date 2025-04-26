@@ -99,9 +99,7 @@ void getHelp(int id) {
   print_green("O elfo %d esta recebendo ajuda\n", (int)id);
   sem_wait(&semaforo_ajuda_finalizada);
 
-  pthread_mutex_lock(&elfos_lock);
   sem_post(&semaforo_elfos); 
   print_green("O elfo %d acabou de ser ajudado e voltara a trabalhar\n",
               (int)id);
-  pthread_mutex_unlock(&elfos_lock);
 }
