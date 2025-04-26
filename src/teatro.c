@@ -237,13 +237,12 @@ void* teatro(void * args) {
         // Renderização
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
-
+        pthread_mutex_lock(&ui_mutex);
         // Renderizar o log na parte inferior da tela
         for (int i = 0; i < LOG_LINES; i++) {
-            int log_line = (log_index + i) % LOG_LINES; // Acessa as linhas do buffer circular
 
             char clean_text[LOG_LINE_LENGTH];
-            remove_ansi_sequences(log_buffer[log_line], clean_text); // Remove sequências ANSI
+            remove_ansi_sequences(get_from_log(i), clean_text); // Remove sequências ANSI
             remove_newline(clean_text);
             
             // Determinar a cor com base no prefixo
@@ -336,7 +335,7 @@ void* teatro(void * args) {
                 SDL_RenderCopy(renderer, tex_rena, NULL, &dst_rena);
             }
         }
-
+        pthread_mutex_unlock(&ui_mutex);
         SDL_RenderPresent(renderer);
         SDL_Delay(100);
     }

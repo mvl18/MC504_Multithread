@@ -19,6 +19,15 @@ void add_to_log(const char *message) {
     pthread_mutex_unlock(&log_mutex);
 }
 
+const char * get_from_log(int i){
+    pthread_mutex_lock(&log_mutex);
+    int log_line = (log_index + i) % LOG_LINES; // Acessa as linhas do buffer circular
+    const char *value = log_buffer[log_line];
+    pthread_mutex_unlock(&log_mutex);
+
+    return value;
+}
+
 // Remove sequências ANSI do texto
 void remove_ansi_sequences(const char *input, char *output) {
     const char *src = input;
