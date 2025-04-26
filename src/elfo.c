@@ -46,7 +46,7 @@ void elfos_kill() {
   // Cancelar threads dos Elfos
   for (size_t i = 0; i < QUANT_ELFOS; i++) {
     pthread_cancel(threads_elfos[i]);
-    print_green("O elfo %d vai esperar até o próximo natal\n", i+1);
+    print_green("O elfo %d vai esperar ate o proximo natal\n", i+1);
   }
   pthread_mutex_destroy(&elfos_lock);
 }
