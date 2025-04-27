@@ -23,10 +23,7 @@ void *santa(void *args) {
     if (reindeer_count == NUM_OF_REINDEERS) {
       prepareSleigh();
 
-      // Como o Santa irá sair. Devemos finalizar as threads dos elfos.
-      // TODO:
-      // Como algumas estão esperando um semáforo, eu vou apenas cancelar todas
-      // as threads, se tiverem alguma ideia melhor (mais clean), podem mudar
+      // Como o Santa irá sair. Devemos finalizar as threads dos elfos. 
       elfos_kill();
       pthread_mutex_unlock(&reindeerMutex);
       pthread_mutex_unlock(&elfos_lock);

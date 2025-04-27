@@ -1,5 +1,3 @@
-// TODO: verificar se essa forma possui justiça
-
 #include "fila.h"
 #include <log.h>
 
