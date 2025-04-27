@@ -19,12 +19,12 @@ Para compilar o projeto, você precisará ter instalado as bibliotecas SDL2, SDL
 
 - **Arch Linux**:
   ```bash
-  sudo pacman -S sdl2 sdl2_image sdl2_ttf libpthread
+  sudo pacman -S sdl2 sdl2_image sdl2_ttf libevent
   ```
 
 - **Debian/Ubuntu**:
   ```bash
-  sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libpthread-dev
+  sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libevent-dev
   ```
 
 Depois de instalar as bibliotecas necessárias, execute o seguinte comando para compilar o projeto:
@@ -45,6 +45,7 @@ Para executar o projeto, utilize o seguinte comando:
 - **src/**: Diretório contendo todos os arquivos de origem do projeto.
 - **lib/**: Diretório contendo cabeçalhos necessários para a compilação e execução do projeto.
 - **assets/**: Diretório contendo imagens e outros recursos utilizados no projeto.
+- **gen_headers.sh**: Script para gerar os cabeçalhos com o conteúdo dos arquivos de imagem e fonte.
 
 ## Autores
 
