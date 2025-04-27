@@ -11,7 +11,7 @@ sem_t semaforo_acordar_santa; // Quando semáforo for exatamente quatro, ele
 
 void *santa(void *args) {
   while (true) {
-    if(elfos_precisando_de_ajuda < 3){
+    if (elfos_precisando_de_ajuda < 3) {
       print_red("Santa esta dormindo\n");
       santa_set_status(0);
       sem_wait(&semaforo_acordar_santa); // Acorda o Santa
@@ -23,13 +23,15 @@ void *santa(void *args) {
     if (reindeer_count == NUM_OF_REINDEERS) {
       prepareSleigh();
 
-      // Como o Santa irá sair. Devemos finalizar as threads dos elfos. 
+      // Como o Santa irá sair. Devemos finalizar as threads dos elfos.
       elfos_kill();
       pthread_mutex_unlock(&reindeerMutex);
       pthread_mutex_unlock(&elfos_lock);
       break;
     } else if (elfos_precisando_de_ajuda == 3) {
       helpElves();
+    } else {
+      fprintf(stderr, "Santa acordou quando não deveria\n");
     }
 
     pthread_mutex_unlock(&reindeerMutex);
@@ -71,6 +73,4 @@ void prepareSleigh() {
   reindeer_count = 0;
 }
 
-void prepare_santa() {
-  sem_init(&semaforo_acordar_santa, 0, 0);
-}
+void prepare_santa() { sem_init(&semaforo_acordar_santa, 0, 0); }
