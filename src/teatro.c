@@ -24,6 +24,7 @@
 #include "rena_png.h"
 #include "titulo_png.h"
 #include "treno_png.h"
+#include "monica_ttf.h"
 
 static pthread_mutex_t ui_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -119,11 +120,22 @@ void* teatro(void * args) {
         return 0;
     }
 
-    TTF_Font *font = TTF_OpenFont("assets/monica.ttf", 24);
+    SDL_RWops *rw = SDL_RWFromConstMem(monica_ttf, monica_ttf_len);
+    if (!rw) {
+        printf("Erro ao criar RWops: %s\n", SDL_GetError());
+        return 0;
+    }
+
+    TTF_Font *font = TTF_OpenFontRW(rw, 1, 24); // o '1' quer dizer: SDL que feche o RWops depois
+    if (!font) {
+        printf("Erro ao carregar fonte da memória: %s\n", TTF_GetError());
+        return 0;
+    }
+    /*TTF_Font *font = TTF_OpenFont("assets/monica.ttf", 24);
     if (!font) {
         printf("Erro ao carregar fonte: %s\n", TTF_GetError());
         return 0;
-    }
+    }*/
 
     //int WINDOW_WIDTH, WINDOW_HEIGHT;
     //SDL_GetWindowSize(window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
