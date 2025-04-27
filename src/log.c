@@ -8,16 +8,6 @@
 
 static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Criação de buffer circular para armazenar as mensagens de log e adicionar no SDL
-char log_buffer[LOG_LINES][LOG_LINE_LENGTH];
-int log_index = 0;
-
-void add_to_log(const char *message) {
-    pthread_mutex_lock(&log_mutex);
-    snprintf(log_buffer[log_index], LOG_LINE_LENGTH, "%s", message);
-    log_index = (log_index + 1) % LOG_LINES; // Atualiza o índice circularmente
-    pthread_mutex_unlock(&log_mutex);
-}
 
 // Remove sequências ANSI do texto
 void remove_ansi_sequences(const char *input, char *output) {

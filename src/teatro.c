@@ -61,7 +61,9 @@ void elfo_atualiza(int id_elfo, int novo_status){
 
 }
 void santa_termina_preparacao(){
+    pthread_mutex_lock(&ui_mutex);
     renas_papai = 1;
+    pthread_mutex_unlock(&ui_mutex);
 }
 void santa_libera_elfos(){
     pthread_mutex_lock(&ui_mutex);
@@ -78,9 +80,28 @@ void santa_chama_elfos(){
     pthread_mutex_unlock(&ui_mutex);
 }
 void santa_set_status(int status){
+    pthread_mutex_lock(&ui_mutex);
     santa_status = status;
+    pthread_mutex_unlock(&ui_mutex);
+
 }
 
+// Criação de buffer circular para armazenar as mensagens de log e adicionar no SDL
+char log_buffer[LOG_LINES][LOG_LINE_LENGTH];
+int log_index = 0;
+
+void add_to_log(const char *message) {
+    pthread_mutex_lock(&ui_mutex);
+    snprintf(log_buffer[log_index], LOG_LINE_LENGTH, "%s", message);
+    log_index = (log_index + 1) % LOG_LINES; // Atualiza o índice circularmente
+    pthread_mutex_unlock(&ui_mutex);
+}
+
+const char * get_from_log(int i){
+    int log_line = (log_index + i) % LOG_LINES; // Acessa as linhas do buffer circular
+    const char *value = log_buffer[log_line];
+    return value;
+}
 
 void* teatro(void * args) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -237,13 +258,12 @@ void* teatro(void * args) {
         // Renderização
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
-
+        pthread_mutex_lock(&ui_mutex);
         // Renderizar o log na parte inferior da tela
         for (int i = 0; i < LOG_LINES; i++) {
-            int log_line = (log_index + i) % LOG_LINES; // Acessa as linhas do buffer circular
 
             char clean_text[LOG_LINE_LENGTH];
-            remove_ansi_sequences(log_buffer[log_line], clean_text); // Remove sequências ANSI
+            remove_ansi_sequences(get_from_log(i), clean_text); // Remove sequências ANSI
             remove_newline(clean_text);
             
             // Determinar a cor com base no prefixo
@@ -336,7 +356,7 @@ void* teatro(void * args) {
                 SDL_RenderCopy(renderer, tex_rena, NULL, &dst_rena);
             }
         }
-
+        pthread_mutex_unlock(&ui_mutex);
         SDL_RenderPresent(renderer);
         SDL_Delay(100);
     }

@@ -9,6 +9,8 @@ extern int log_index;
 
 void add_to_log(const char *message);
 
+const char *get_from_log(int i);
+
 void remove_ansi_sequences(const char *input, char *output);
 
 void remove_newline(char *text);

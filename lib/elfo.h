@@ -17,13 +17,11 @@ extern pthread_mutex_t elfos_lock; // Lock para todos as variáveis relacionadas
 extern sem_t semaforo_tres_elfos; // Este semáforo se torna 1 quando há 3 elfos
                                   // esperando para serem ajudados
 
-// TODO: Implementar no Santa
 extern sem_t semaforo_elfos_podem_ser_ajudados; // O Santa torna o valor deste
                                                 // semáforo em três para avisar
                                                 // cada um dos três elfos que
                                                 // eles podem ser ajudados
 
-// TODO: Implementar no Santa
 extern sem_t semaforo_ajuda_finalizada; // O Santa torna o valor deste semáforo
                                         // em três para avisar os três elfos que
                                         // terminou de ajudá-los
